@@ -30,7 +30,11 @@
 
   <div id="storefront-container"></div>
 
+  {% if user.roles.developer %}
+  {% script 'storefront-sdk-libs-dev.js@vtex.storefront-sdk' %}
+  {% else %}
   {% script 'storefront-sdk-libs.js@vtex.storefront-sdk' %}
+  {% endif %}
 
   {% script '//npmcdn.com/alt@0.17.4/dist/alt.min.js' %}
   {% script '//npmcdn.com/immutable@3.7.5/dist/immutable.min.js' %}
@@ -43,7 +47,11 @@
   {% capture reactLocaleUrl %}//npmcdn.com/react-intl@2.0.0-beta-1/dist/locale-data/{{ culture.language }}.js{% endcapture %}
   {% script reactLocaleUrl %}
 
+  {% if user.roles.developer %}
+  {% script 'storefront-sdk-dev.js@vtex.storefront-sdk' %}
+  {% else %}
   {% script 'storefront-sdk.js@vtex.storefront-sdk' %}
+  {% endif %}
 
   <script>
     window._storefront = {
