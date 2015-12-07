@@ -7,7 +7,7 @@ var production = process.env.NODE_ENV === 'production';
 
 var commonsConfig = {
   name: ['sdk-libs'],
-  filename: 'storefront-[name].js',
+  filename: production ? 'storefront-[name].js' : 'storefront-[name]-dev.js',
   minChunks: Infinity,
 };
 
@@ -67,7 +67,7 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin(commonsConfig),
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
-      exclude: ['storefront-sdk-libs.js']
+      exclude: ['storefront-sdk-libs-dev.js']
     })
   ],
 
@@ -92,8 +92,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './storefront/assets/'),
     publicPath: publicPath,
-    filename: '[name]/' + pkg.name + '.js',
-    chunkFilename: pkg.name + '-[name].js',
+    filename: production ? '[name]/' + pkg.name + '.js' : '[name]/' + pkg.name + '-dev.js',
+    chunkFilename: production ? pkg.name + '-[name].js' : pkg.name + '-[name]-dev.js',
     jsonpFunction: 'webpackJsonp_' + meta.vendor.replace('-', '') + '_' + meta.name.replace('-', ''),
     devtoolModuleFilenameTemplate: 'webpack:///' + pkg.name + '/[resource]?[id]-[hash]'
   },

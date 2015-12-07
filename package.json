@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack -w & vtex watch",
-    "prereleasy": "NODE_ENV=production webpack",
+    "prereleasy": "NODE_ENV=production webpack && webpack",
     "postreleasy": "vtex publish",
     "docs:clean": "rimraf docs/_book",
     "docs:prepare": "gitbook install",
