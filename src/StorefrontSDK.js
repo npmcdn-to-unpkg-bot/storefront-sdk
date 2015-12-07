@@ -49,6 +49,17 @@ class StorefrontSDK {
         key: routeName
       };
 
+      if (process.env.NODE_ENV !== 'production') {
+        if (!component) {
+          console.error(`Component ${route.component} not found.`);
+
+          const ComponentNotFound = require('./components/ComponentNotFound/ComponentNotFound');
+          return <Route {...routeProps} component={ComponentNotFound(routeName, route.component)}/>;
+        }
+      } else if (!component) {
+        return null;
+      }
+
       if (component.onEnter) {
         routeProps.onEnter = component.onEnter;
       }

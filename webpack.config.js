@@ -42,6 +42,27 @@ module.exports = {
         include: path.join(__dirname, 'src'),
         exclude: /node_modules/,
         loader: 'babel'
+      }, {
+        test: /\.less$/,
+        loader: 'style-loader!css-loader!less-loader'
+      }, {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      }, {
+        test: /\.svg$/,
+        loaders: ['raw-loader', 'svgo-loader?' + JSON.stringify({
+          plugins: [
+            {removeTitle: true},
+            {convertColors: {shorthex: false}},
+            {convertPathData: false}
+          ]
+        })]
+      }, {
+        test: /\.(png|jpg|woff|ttf|eot|woff2)$/,
+        loader: 'url-loader?limit=100000'
+      }, {
+        test: /\.(jpg|gif)$/,
+        loader: 'file-loader'
       }
     ]
   },
