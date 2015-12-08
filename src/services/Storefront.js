@@ -27,7 +27,7 @@ class Storefront {
       params[`query.${key}`] = query[key];
     }
 
-    return axios.get(`/_routes/${id}/resources/`, {
+    return axios.get(`/_areas/${id}/_resources/`, {
       headers: this.defaultHeaders,
       params
     });
