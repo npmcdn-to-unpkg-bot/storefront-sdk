@@ -3,6 +3,7 @@ import immutable from 'alt/utils/ImmutableUtil';
 
 function addFacets(state, facets) {
   let path = window.location.pathname + window.location.search;
+
   let newFacets = state.withMutations(map => {
     map.set(path, Immutable.fromJS(facets));
   });
@@ -11,7 +12,11 @@ function addFacets(state, facets) {
 }
 
 function getDataFromResources(state, resources) {
-  let facets = resources['facets@vtex.storefront-sdk'];
+  let facets = {};
+
+  for (let facet of resources['facets@vtex']) {
+    facets[facet.area] = facet.data;
+  }
 
   return addFacets(state, facets);
 }

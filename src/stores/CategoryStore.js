@@ -1,8 +1,8 @@
 import Immutable from 'immutable';
 import immutable from 'alt/utils/ImmutableUtil';
 import isArray from 'lodash-compat/lang/isArray';
-import values from 'lodash-compat/object/values';
 import flatten from 'lodash-compat/array/flatten';
+import map from 'lodash-compat/collection/map';
 
 function addCategories(state, categories) {
   if (!isArray(categories)) {
@@ -19,7 +19,7 @@ function addCategories(state, categories) {
 }
 
 function getDataFromResources(state, resources) {
-  let categories = flatten(values(resources['categories@vtex.storefront-sdk']));
+  let categories = flatten(map(resources['categories@vtex'], (area) => area.data));
 
   return addCategories(state, categories);
 }

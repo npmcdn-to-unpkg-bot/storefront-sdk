@@ -4,19 +4,23 @@ import pluck from 'lodash-compat/collection/pluck';
 
 function getDataFromResources(state, resources) {
   let path = window.location.pathname + window.location.search;
-  let products = resources['products@vtex.storefront-sdk'];
-  let product = resources['product@vtex.storefront-sdk'];
+  let productsAreas = resources['products@vtex'];
+  let productAreas = resources['product@vtex'];
 
   return state.withMutations(map => {
-    for (let componentId in products) {
-      let productSlug = pluck(products[componentId], 'slug');
-      let results = Immutable.Map().setIn([componentId, 'results'], productSlug);
-      map.set(path, results);
+    if (productsAreas) {
+      for (let currentArea of productsAreas) {
+        let productsSlug = pluck(currentArea.data, 'slug');
+        let results = Immutable.Map().setIn([currentArea.area, 'results'], productsSlug);
+        map.set(path, results);
+      }
     }
-    for (let componentId in product) {
-      let productSlug = pluck(product[componentId], 'slug');
-      let results = Immutable.Map().setIn([componentId, 'results'], productSlug);
-      map.set(path, results);
+    if (productAreas) {
+      for (let currentArea of productAreas) {
+        let productSlug = pluck(currentArea.data, 'slug');
+        let results = Immutable.Map().setIn([currentArea.area, 'results'], productSlug);
+        map.set(path, results);
+      }
     }
   });
 }

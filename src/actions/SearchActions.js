@@ -13,10 +13,10 @@ class SearchActions {
     search.products(params.toJS())
       .then((result) => {
         let products;
-        if (result.data['product@vtex.storefront-sdk']) {
-          products = result.data['product@vtex.storefront-sdk']._page;
-        } else if (result.data['products@vtex.storefront-sdk']) {
-          products = result.data['products@vtex.storefront-sdk']._page;
+        if (result.data['product@vtex']) {
+          products = result.data['product@vtex'][0].data;
+        } else if (result.data['products@vtex']) {
+          products = result.data['products@vtex'][0].data;
         }
         this.actions.requestSearchSuccess({ params, products });
       })

@@ -1,8 +1,9 @@
 import Immutable from 'immutable';
 import immutable from 'alt/utils/ImmutableUtil';
 import isArray from 'lodash-compat/lang/isArray';
-import values from 'lodash-compat/object/values';
 import flatten from 'lodash-compat/array/flatten';
+import values from 'lodash-compat/object/values';
+import map from 'lodash-compat/collection/map';
 
 function addProducts(state, products) {
   if (!isArray(products)) {
@@ -18,12 +19,14 @@ function addProducts(state, products) {
 
 function getDataFromResources(state, resources) {
   let products = [];
-  if (resources['product@vtex.storefront-sdk']) {
-    products = values(resources['product@vtex.storefront-sdk']);
+  if (resources['product@vtex']) {
+    products = flatten(values(map(resources['product@vtex'], (area) => area.data)));
   }
 
-  if (resources['products@vtex.storefront-sdk']) {
-    products = products.concat(flatten(values(resources['products@vtex.storefront-sdk'])));
+  if (resources['products@vtex']) {
+    products = flatten(products.concat(
+      flatten(values(map(resources['products@vtex'], (area) => area.data)))
+    ));
   }
 
   return addProducts(state, products);

@@ -3,7 +3,12 @@ import immutable from 'alt/utils/ImmutableUtil';
 
 function getDataFromResources(state, resources) {
   if (resources._settings) {
-    let settings = resources._settings;
+    let settings = {};
+
+    for (let i = 0; i < resources._settings.length; i++) {
+      settings[resources._settings[i].area] = resources._settings[i].data;
+    }
+
     return state.merge(Immutable.fromJS(settings));
   }
   return state;
