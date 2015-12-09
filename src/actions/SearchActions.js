@@ -11,18 +11,8 @@ class SearchActions {
 
     // Call API with query parameter
     search.products(params.toJS())
-      .then((result) => {
-        let products;
-        if (result.data['product@vtex']) {
-          products = result.data['product@vtex'][0].data;
-        } else if (result.data['products@vtex']) {
-          products = result.data['products@vtex'][0].data;
-        }
-        this.actions.requestSearchSuccess({ params, products });
-      })
-      .catch((error) =>
-        this.actions.requestSearchFail({ params, error })
-      );
+      .then((response) => this.actions.requestSearchSuccess({ params, products: response.data }))
+      .catch((error) => this.actions.requestSearchFail({ params, error }));
 
     return params;
   }
