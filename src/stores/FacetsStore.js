@@ -13,8 +13,9 @@ function addFacets(state, facets) {
 
 function getDataFromResources(state, resources) {
   let facets = {};
+  let resource = resources['facets@vtex'] || [];
 
-  resources['facets@vtex'].forEach((facet) => {
+  resource.forEach((facet) => {
     facets[facet.area] = facet.data;
   });
 
