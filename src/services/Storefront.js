@@ -12,29 +12,33 @@ class Storefront {
   }
 
   saveAreaSettings({id, component, settings}) {
-    const url = `/_resources/_settings/`;
-    const params = { id };
+    const url = `/_resources/_settings/${id}`;
     const data = { component, settings };
 
     return axios.put(url, data, {
-      headers: this.defaultHeaders,
-      params
+      headers: this.defaultHeaders
     });
   }
 
   getAreaResources({id, params, query}) {
+    let reqParams = {};
+
     for (let key in query) {
-      params[`query.${key}`] = query[key];
+      reqParams[`query.${key}`] = query[key];
+    }
+
+    for (let key in params) {
+      reqParams[`route.${key}`] = params[key];
     }
 
     return axios.get(`/_areas/${id}/_resources/`, {
       headers: this.defaultHeaders,
-      params
+      params: reqParams
     });
   }
 
   getAreaSettings({id}) {
-    return axios.get(`/_resources/_settings/?route=${id}`, {
+    return axios.get(`/_resources/_settings/${id}`, {
       headers: this.defaultHeaders
     });
   }
