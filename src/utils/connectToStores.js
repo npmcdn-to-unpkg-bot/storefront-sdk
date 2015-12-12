@@ -2,7 +2,6 @@ import React from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import isFunction from 'lodash-compat/lang/isFunction';
 import keys from 'lodash-compat/object/keys';
-import assign from 'lodash-compat/object/assign';
 
 /**
  *    import { stores, utils } from 'sdk';
@@ -67,7 +66,7 @@ function connectToStores() {
 
       render() {
         return (
-          <Component {...assign({}, this.props, this.state)}/>
+          <Component {...{...this.props, ...this.state}}/>
         );
       }
     }
