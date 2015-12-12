@@ -17,6 +17,7 @@
   "dependencies": {
     "alt": "^0.17.4",
     "debounce": "^1.0.0",
+    "hoist-non-react-statics": "^1.0.3",
     "lodash-compat": "^3.10.1",
     "react": "^0.14.3",
     "react-addons-css-transition-group": "^0.14.3",

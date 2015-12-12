@@ -1,7 +1,7 @@
 import React from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import isFunction from 'lodash-compat/lang/isFunction';
-import keys from 'lodash-compat/object/keys';
+import hoistStatics from 'hoist-non-react-statics';
 
 /**
  *    import { stores, utils } from 'sdk';
@@ -71,16 +71,9 @@ function connectToStores() {
       }
     }
 
-    StoreConnection.contextTypes = Component.contextTypes;
-    let staticProperties = keys(Component);
-
-    for (let i = 0; i < staticProperties.length; i++) {
-      let property = staticProperties[i];
-      StoreConnection[property] = Component[property];
-    }
     StoreConnection.displayName = `Connected${getDisplayName(Component)}`;
 
-    return StoreConnection;
+    return hoistStatics(StoreConnection, Component);
   };
 }
 
