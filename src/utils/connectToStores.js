@@ -26,6 +26,11 @@ import assign from 'lodash-compat/object/assign';
  *
  *    export default MyComponent;
  */
+
+function getDisplayName(Component) {
+  return Component.displayName || Component.name || 'Component';
+}
+
 function connectToStores() {
   return function decorator(Component) {
     // Check for required static methods.
@@ -37,8 +42,6 @@ function connectToStores() {
     }
 
     class StoreConnection extends React.Component {
-      displayName = `Stateful${Component.displayName || Component.name || 'Container'}`
-
       constructor(props) {
         super(props);
 
@@ -76,6 +79,7 @@ function connectToStores() {
       let property = staticProperties[i];
       StoreConnection[property] = Component[property];
     }
+    StoreConnection.displayName = `Connected${getDisplayName(Component)}`;
 
     return StoreConnection;
   };
