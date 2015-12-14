@@ -1,8 +1,7 @@
 import React from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import isFunction from 'lodash-compat/lang/isFunction';
-import keys from 'lodash-compat/object/keys';
-import assign from 'lodash-compat/object/assign';
+import hoistStatics from 'hoist-non-react-statics';
 
 /**
  *    import { stores, utils } from 'sdk';
@@ -26,6 +25,11 @@ import assign from 'lodash-compat/object/assign';
  *
  *    export default MyComponent;
  */
+
+function getDisplayName(Component) {
+  return Component.displayName || Component.name || 'Component';
+}
+
 function connectToStores() {
   return function decorator(Component) {
     // Check for required static methods.
@@ -37,8 +41,6 @@ function connectToStores() {
     }
 
     class StoreConnection extends React.Component {
-      displayName = `Stateful${Component.displayName || Component.name || 'Container'}`
-
       constructor(props) {
         super(props);
 
@@ -64,20 +66,14 @@ function connectToStores() {
 
       render() {
         return (
-          <Component {...assign({}, this.props, this.state)}/>
+          <Component {...{...this.props, ...this.state}}/>
         );
       }
     }
 
-    StoreConnection.contextTypes = Component.contextTypes;
-    let staticProperties = keys(Component);
+    StoreConnection.displayName = `Connected${getDisplayName(Component)}`;
 
-    for (let i = 0; i < staticProperties.length; i++) {
-      let property = staticProperties[i];
-      StoreConnection[property] = Component[property];
-    }
-
-    return StoreConnection;
+    return hoistStatics(StoreConnection, Component);
   };
 }
 
