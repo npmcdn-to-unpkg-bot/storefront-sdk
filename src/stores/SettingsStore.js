@@ -17,7 +17,7 @@ function getDataFromResources(state, resources) {
 @immutable
 class SettingsStore {
   constructor(dispatcher) {
-    this.bindActions(dispatcher.actions.ResourceActions);
+    this.bindActions(dispatcher.actions.AreaActions);
 
     this.state = getDataFromResources(Immutable.Map(), window.storefront.currentRoute.resources);
   }

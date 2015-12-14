@@ -12,7 +12,7 @@ function getDataFromResources(state, currentURL, resources) {
 @immutable
 class ResourceStore {
   constructor(dispatcher) {
-    this.bindActions(dispatcher.actions.ResourceActions);
+    this.bindActions(dispatcher.actions.AreaActions);
 
     let currentURL = (window.location.pathname + window.location.search);
     this.state = getDataFromResources(Immutable.Map(), currentURL, window.storefront.currentRoute.resources);

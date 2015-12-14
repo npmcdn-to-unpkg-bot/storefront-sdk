@@ -28,7 +28,7 @@ function getDataFromResources(state, resources) {
 class CategoryStore {
   constructor(dispatcher) {
     this.bindActions(dispatcher.actions.CategoryActions);
-    this.bindActions(dispatcher.actions.ResourceActions);
+    this.bindActions(dispatcher.actions.AreaActions);
     let resources = window.storefront.currentRoute.resources;
 
     this.state = getDataFromResources(Immutable.Map(), resources);

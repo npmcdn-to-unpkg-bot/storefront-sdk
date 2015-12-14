@@ -29,7 +29,7 @@ function getDataFromResources(state, resources) {
 class SearchStore {
   constructor(dispatcher) {
     this.bindActions(dispatcher.actions.SearchActions);
-    this.bindActions(dispatcher.actions.ResourceActions);
+    this.bindActions(dispatcher.actions.AreaActions);
 
     this.state = getDataFromResources(Immutable.Map(), window.storefront.currentRoute.resources);
   }

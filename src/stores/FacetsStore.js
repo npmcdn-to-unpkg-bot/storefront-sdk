@@ -26,7 +26,7 @@ function getDataFromResources(state, resources) {
 class FacetsStore {
   constructor(dispatcher) {
     this.bindActions(dispatcher.actions.FacetsActions);
-    this.bindActions(dispatcher.actions.ResourceActions);
+    this.bindActions(dispatcher.actions.AreaActions);
     let resources = window.storefront.currentRoute.resources;
 
     this.state = getDataFromResources(Immutable.Map(), resources);
