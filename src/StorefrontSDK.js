@@ -19,6 +19,8 @@ import Img from './utils/Img';
 import Area from './components/Area';
 import App from './components/App';
 
+import './utils/editable';
+
 let history = useQueries(createHistory)();
 
 class StorefrontSDK {
