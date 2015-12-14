@@ -19,6 +19,8 @@ import Img from './utils/Img';
 import Area from './components/Area';
 import App from './components/App';
 
+import * as storefrontService from 'services/Storefront';
+
 import './utils/editable';
 
 let history = useQueries(createHistory)();
@@ -31,6 +33,10 @@ class StorefrontSDK {
   history = history;
 
   Area = Area;
+
+  services = {
+    storefront: storefrontService
+  }
 
   utils = {
     connectToStores,
