@@ -18,6 +18,7 @@ import Price from './utils/Price';
 import Img from './utils/Img';
 import Area from './components/Area';
 import App from './components/App';
+import loadPage from './utils/loadPage';
 
 import * as storefrontService from 'services/Storefront';
 
@@ -53,26 +54,22 @@ class StorefrontSDK {
 
       let routeProps = {
         path: route.path,
-        component: component,
         key: routeName
       };
 
-      if (process.env.NODE_ENV !== 'production') {
-        if (!component) {
-          console.error(`Component ${route.component} not found.`);
+      if (!component) {
+        routeProps.getComponents = (location, callback) => {
+          loadPage(this.dispatcher, routeName, route.component, callback);
+        };
+      } else {
+        routeProps.component = component;
 
-          const ComponentNotFound = require('./components/ComponentNotFound/ComponentNotFound');
-          return <Route {...routeProps} component={ComponentNotFound(routeName, route.component)}/>;
+        if (component.onEnter) {
+          routeProps.onEnter = component.onEnter;
         }
-      } else if (!component) {
-        return null;
-      }
-
-      if (component.onEnter) {
-        routeProps.onEnter = component.onEnter;
-      }
-      if (component.onLeave) {
-        routeProps.onLeave = component.onLeave;
+        if (component.onLeave) {
+          routeProps.onLeave = component.onLeave;
+        }
       }
 
       return <Route {...routeProps}/>;
