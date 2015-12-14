@@ -16,15 +16,15 @@ class Search {
     this.productsResource = `/_resources/search@vtex.storefront-sdk/${accountName}/products`;
   }
 
+  product(product) {
+    return axios.get(this.productResource, {
+      params: { product },
+      header: this.defaultHeaders
+    });
+  }
+
   products(params) {
     params = omit(params, ['$id']);
-
-    if (params.product) {
-      return axios.get(this.productResource, {
-        params,
-        headers: this.defaultHeaders
-      });
-    }
 
     return axios.get(this.productsResource, {
       params,

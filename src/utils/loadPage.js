@@ -1,3 +1,6 @@
+import { replaceWithCache, setLoading } from '../actionCreators/context';
+import { getRouteResources } from '../actionCreators/area';
+
 // Helper function to get an absolute URL
 // https://davidwalsh.name/get-absolute-url
 const a = document.createElement('a');
@@ -24,11 +27,11 @@ let assetsMap = window.storefront.currentRoute.assets.reduce((map, asset) => {
   map[asset] = true;
   return map;
 }, {});
-function getRouteAssets(currentURL, dispatcher) {
-  const ContextStore = dispatcher.stores.ContextStore.getState();
-  const route = ContextStore.get('route');
-  const AssetStore = dispatcher.stores.AssetStore.getState();
-  const routeAssets = AssetStore.get(route);
+function getRouteAssets(currentURL, store) {
+  const context = store.getState().SDK.context;
+  const assets = store.getState().SDK.assets;
+  const route = context.get('route');
+  const routeAssets = assets.get(route);
   const assetsPayload = routeAssets && routeAssets.get('payload');
 
   // If the list of assets is present
@@ -73,41 +76,43 @@ function getRouteAssets(currentURL, dispatcher) {
     // When all files are loaded
     Promise.all(requests).then(() => {
       URLMap[currentURL] = true;
-      dispatcher.actions.ContextActions.setLoading(false);
+      store.dispatch(setLoading(false));
     });
   }
 }
 
 // Declare URL map to not load pages settings unnecessarily
 let URLMap = {};
-function loadPage(location, dispatcher) {
+function loadPage(location, store) {
   const currentURL = location.pathname + location.search;
 
   // If we have any URLs on the map
   // or the current URL is present
   if (Object.keys(URLMap).length > 0 && !URLMap[currentURL]) {
+    let unsubscribe;
+
     // Listener of the context store
     const contextListener = () => {
-      getRouteAssets(currentURL, dispatcher);
-      dispatcher.stores.ContextStore.unlisten(contextListener);
+      getRouteAssets(currentURL, store);
+      unsubscribe();
     };
 
     // Add a store listener, every change to ContextStore will call getRouteAssets()
-    dispatcher.stores.ContextStore.listen(contextListener);
+    unsubscribe = store.subscribe(contextListener);
     // Here we go! :)
-    dispatcher.actions.AreaActions.getRouteResources(currentURL, location);
+    store.dispatch(getRouteResources(currentURL, location));
   } else if (URLMap[currentURL]) {
     // If we have the URL on the map
     // We have the cache too, so we don't need
     // to load anything
-    dispatcher.actions.ContextActions.replaceWithCache(currentURL);
-    dispatcher.actions.ContextActions.setLoading(false);
+    store.dispatch(replaceWithCache(currentURL));
+    store.dispatch(setLoading(false));
   } else {
     // If all else fails, then that means it's the first load
     // On the first load the page comes preload, so we just need
     // to add the current URL to the map
     URLMap[currentURL] = true;
-    dispatcher.actions.ContextActions.setLoading(false);
+    store.dispatch(setLoading(false));
   }
 }
 

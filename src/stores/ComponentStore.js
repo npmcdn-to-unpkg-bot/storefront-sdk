@@ -1,6 +1,8 @@
 import Immutable from 'immutable';
 import isArray from 'lodash-compat/lang/isArray';
 import immutable from 'alt/utils/ImmutableUtil';
+import SDK from '../StorefrontSDK.js';
+import { register } from '../actionCreators/component';
 
 let _getComponentProperties = function _getComponentProperties(state, _component) {
   let { name, role, area, constructor } = _component;
@@ -32,6 +34,8 @@ class ComponentStore {
   }
 
   onRegister(param) {
+    SDK.store.dispatch(register(param));
+
     let newState;
     if (isArray(param)) {
       newState = _registerComponents(this.state, param);

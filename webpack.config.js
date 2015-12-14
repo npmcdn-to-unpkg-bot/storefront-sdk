@@ -20,7 +20,9 @@ module.exports = {
       'react-addons-css-transition-group',
       'react-addons-shallow-compare',
       'react-intl',
-      'react-helmet'
+      'react-helmet',
+      'redux',
+      'react-redux'
     ]
   },
 

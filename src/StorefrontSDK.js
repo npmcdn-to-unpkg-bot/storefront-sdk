@@ -7,6 +7,8 @@ import 'expose?ReactCSSTransitionGroup!react-addons-css-transition-group';
 import 'expose?ReactShallowCompare!react-addons-shallow-compare';
 import 'expose?ReactIntl!react-intl';
 import 'expose?ReactHelmet!react-helmet';
+import 'expose?Redux!redux';
+import 'expose?ReactRedux!react-redux';
 
 import { createHistory, useQueries } from 'history';
 import { IntlProvider } from 'react-intl';
@@ -17,32 +19,44 @@ import connectToStores from './utils/connectToStores';
 import Root from './components/Root';
 import { loadScript, loadPage } from './utils/loadPage';
 
+import { Provider } from 'react-redux';
+import configureStore, { registerAppReducers } from './store/configureStore';
+import * as actions from './constants';
+import * as actionCreators from './actionCreators';
+import DevTools from 'components/DevTools';
+
 import * as storefrontService from 'services/Storefront';
 import checkoutService from 'services/Checkout';
 
 import './utils/editable';
 import contextify from './utils/contextify';
 
-const history = useQueries(createHistory)();
+let history = useQueries(createHistory)();
+let store = configureStore();
 
-class StorefrontSDK {
-  dispatcher = dispatcher;
-  actions = dispatcher.actions;
-  stores = dispatcher.stores;
+const sdk = {
+  dispatcher: dispatcher,
+  actions: dispatcher.actions,
+  stores: dispatcher.stores,
 
-  history = history;
+  store,
+  actionsR: actions,
+  actionCreators,
+  registerAppReducers,
 
-  services = {
+  history: history,
+
+  services: {
     storefront: storefrontService,
     checkout: new checkoutService()
-  }
+  },
 
-  connectToStores = connectToStores
-  loadScript = loadScript
-  loadPage = loadPage
-  contextify = contextify
+  connectToStores: connectToStores,
+  loadScript: loadScript,
+  loadPage: loadPage,
+  contextify: contextify,
 
-  init = () => {
+  init: () => {
     // Set isFirstLoad out to be wrapped on the closure
     let isFirstLoad = true;
     // Set history listener for navigation
@@ -51,13 +65,13 @@ class StorefrontSDK {
       // clicking like an absolute madman to go to a URL or
       // clicking on a link that points to the same path
       if (!isFirstLoad) {
-        const ContextStore = dispatcher.stores.ContextStore.getState();
-        const previousLocation = ContextStore.get('location');
+        const context = store.getState().SDK.context;
+        const previousLocation = context.get('location');
         const previousURL = previousLocation.pathname + previousLocation.search;
         const newURL = location.pathname + location.search;
         const isURLEqual = previousURL === newURL;
 
-        if (ContextStore.get('loading') || isURLEqual) {
+        if (context.get('loading') || isURLEqual) {
           return false;
         }
       } else {
@@ -65,22 +79,25 @@ class StorefrontSDK {
       }
 
       // Signal that we are loading the page
-      dispatcher.actions.ContextActions.setLoading(true);
+      store.dispatch(actionCreators.context.setLoading(true));
       // Start the route loading cycle!
-      loadPage(location, dispatcher);
+      loadPage(location, store);
     });
 
     // Finally, render
-    const locale = this.dispatcher.stores.ContextStore.getState().getIn(['culture', 'language']);
+    const locale = store.getState().SDK.context.getIn(['culture', 'language']);
     ReactIntl.addLocaleData(ReactIntlLocaleData[locale]);
     ReactDOM.render(
-      <IntlProvider locale={locale}>
-        <Root history={history} />
-      </IntlProvider>
+      <Provider store={store}>
+        <div>
+          <IntlProvider locale={locale}>
+            <Root history={history} />
+          </IntlProvider>
+          <DevTools/>
+        </div>
+      </Provider>
     , document.getElementById('storefront-container'));
   }
-}
-
-const sdk = new StorefrontSDK();
+};
 
 export default sdk;

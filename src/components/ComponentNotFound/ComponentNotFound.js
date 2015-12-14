@@ -1,12 +1,12 @@
 import React from 'react';
 import './style.less';
-import dispatcher from '../../dispatcher/StorefrontDispatcher';
+import { store } from '../../StorefrontSDK';
 import editDistance from 'utils/editDistance';
 
 const findSimilarRegisteredComponent = (componentId) => {
   let similar;
   let similarDistance = 4;
-  let components = dispatcher.stores.ComponentStore.getState().toJS();
+  let components = store.getState().component.toJS();
 
   for (let component in components) {
     let distance = editDistance(component, componentId);

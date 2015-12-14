@@ -2,12 +2,6 @@ import React from 'react';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
 
 class Img extends React.Component {
-  static propTypes = {
-    src: React.PropTypes.string.isRequired,
-    width: React.PropTypes.number,
-    height: React.PropTypes.number
-  }
-
   constructor(props) {
     super(props);
 
@@ -35,5 +29,11 @@ class Img extends React.Component {
     );
   }
 }
+
+Img.propTypes = {
+  src: React.PropTypes.string.isRequired,
+  width: React.PropTypes.number,
+  height: React.PropTypes.number
+};
 
 export default Img;

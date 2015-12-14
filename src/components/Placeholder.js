@@ -2,6 +2,7 @@ import React from 'react';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
 import shallowCompare from 'react-addons-shallow-compare';
 import mergeDeep from 'utils/mergeDeep';
+import { connect } from 'react-redux';
 
 /**
  *  <Placeholder id="banner"/>
@@ -21,64 +22,42 @@ import mergeDeep from 'utils/mergeDeep';
  *  Or, you can ignore the prop "id" and make everything fixed:
  *  <Placeholder component="Banner@vtex.storefront-theme" settings={{title: 'Hi'}}/>
  */
+@connect((state, props) => {
+  const componentSettings = state.SDK.settings.get(props.id);
+  if (!componentSettings) {
+    return { setings: null, component: null };
+  }
 
+  const settings = componentSettings.get('settings');
+  const componentName = props.component ? props.component : componentSettings.get('component');
+  const component = state.SDK.component.getIn([componentName, 'constructor']);
+
+  if (!component) {
+    if (typeof props.component !== 'undefined' && typeof props.component !== 'string') {
+      console.warn(`Placeholder: "component" prop should be a component locator (eg: ComponentName@vendor.appName)`);
+    } else {
+      console.warn(`Placeholder: Could not find component ${componentName}`);
+    }
+  }
+
+  return {
+    settingsProps: props.settings,
+    settings: settings ? settings : Immutable.Map(),
+    component: component
+  };
+})
 class Placeholder extends React.Component {
-  componentWillMount() {
-    if (!this.props.id) {
+  constructor(props) {
+    super(props);
+
+    if (!props.id) {
       console.error('Placeholder: required prop "id" not defined');
     }
-
-    this.state = this.getDataFromStores(this.props);
-
-    dispatcher.stores.SettingsStore.listen(this.onChange);
-    dispatcher.stores.ComponentStore.listen(this.onChange);
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState(this.getDataFromStores(props));
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
-  }
-
-  componentWillUnmount() {
-    dispatcher.stores.SettingsStore.unlisten(this.onChange);
-    dispatcher.stores.ComponentStore.unlisten(this.onChange);
-  }
-
-  getDataFromStores = (props) => {
-    const componentSettings = dispatcher.stores.SettingsStore.getState().get(props.id);
-
-    if (!componentSettings) {
-      return { setings: null, component: null };
-    }
-
-    const settings = componentSettings.get('settings');
-    const componentName = props.component ? props.component : componentSettings.get('component');
-    const component = dispatcher.stores.ComponentStore.getState().getIn([componentName, 'constructor']);
-
-    if (!component) {
-      if (typeof props.component !== 'undefined' && typeof props.component !== 'string') {
-        console.warn(`Placeholder: "component" prop should be a component locator (eg: ComponentName@vendor.appName)`);
-      } else {
-        console.warn(`Placeholder: Could not find component ${componentName}`);
-      }
-    }
-
-    return {
-      settings: settings ? settings : Immutable.Map(),
-      component: component
-    };
-  }
-
-  onChange = () => {
-    this.setState(this.getDataFromStores(this.props));
   }
 
   render() {
-    const settings = mergeDeep(this.state.settings, this.props.settings);
-    const Component = this.state.component;
+    const settings = mergeDeep(this.props.settings, this.props.settingsProps);
+    const Component = this.props.component;
 
     if (!Component) {
       return null;
