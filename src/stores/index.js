@@ -1,3 +1,4 @@
+import AssetStore from './AssetStore';
 import CartStore from './CartStore';
 import ComponentStore from './ComponentStore';
 import ContextStore from './ContextStore';
@@ -9,6 +10,7 @@ import CategoryStore from './CategoryStore';
 import FacetsStore from './FacetsStore';
 
 let stores = [
+  {name: 'AssetStore', obj: AssetStore},
   {name: 'CartStore', obj: CartStore},
   {name: 'ComponentStore', obj: ComponentStore},
   {name: 'ContextStore', obj: ContextStore},

@@ -1,22 +1,35 @@
-import Storefront from 'services/Storefront';
+import * as storefrontService from 'services/Storefront';
 
-let storefrontService = new Storefront();
-
-class ResourceActions {
-
-  saveSettings({id, component, settings}) {
-    storefrontService.saveAreaSettings({id, component, settings})
-      .then(() => this.actions.saveSettingsSuccess({id, settings}))
-      .catch((error) => this.actions.saveSettingsError({id, settings, error}));
+class AreaActions {
+  getAreaAssets({id}) {
+    storefrontService.getAreaAssets({id})
+      .then((response) => this.actions.getAreaAssetsSuccess({id, assets: response.data}))
+      .catch((error) => this.actions.getAreaAssetsFail({id, error}));
 
     return arguments[0];
   }
 
-  saveSettingsSuccess(data) {
+  getAreaAssetsSuccess(data) {
     return data;
   }
 
-  saveSettingsError(error) {
+  getAreaAssetsFail(error) {
+    return error;
+  }
+
+  saveAreaSettings({id, component, settings}) {
+    storefrontService.saveAreaSettings({id, component, settings})
+      .then(() => this.actions.saveAreaSettingsSuccess({id, settings}))
+      .catch((error) => this.actions.saveAreaSettingsError({id, settings, error}));
+
+    return arguments[0];
+  }
+
+  saveAreaSettingsSuccess(data) {
+    return data;
+  }
+
+  saveAreaSettingsError(error) {
     return error;
   }
 
@@ -47,4 +60,4 @@ class ResourceActions {
   }
 }
 
-export default ResourceActions;
+export default AreaActions;
