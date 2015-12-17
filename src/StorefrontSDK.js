@@ -14,9 +14,6 @@ import ReactDOM from 'react-dom';
 
 import dispatcher from './dispatcher/StorefrontDispatcher';
 import connectToStores from './utils/connectToStores';
-import Price from './utils/Price';
-import Img from './utils/Img';
-import Area from './components/Area';
 import App from './components/App';
 import loadPage from './utils/loadPage';
 
@@ -33,17 +30,11 @@ class StorefrontSDK {
 
   history = history;
 
-  Area = Area;
-
   services = {
     storefront: storefrontService
   }
 
-  utils = {
-    connectToStores,
-    Price,
-    Img
-  }
+  connectToStores = connectToStores
 
   init() {
     let components = this.dispatcher.stores.ComponentStore.getState();

@@ -4,9 +4,9 @@ import isFunction from 'lodash-compat/lang/isFunction';
 import hoistStatics from 'hoist-non-react-statics';
 
 /**
- *    import { stores, utils } from 'sdk';
+ *    import { stores, connectToStores } from 'sdk';
  *
- *    @utils.connectToStores()
+ *    @connectToStores()
  *    class MyComponent extends React.Component {
  *      static getStores(props) {
  *        return [stores.ProductStore]

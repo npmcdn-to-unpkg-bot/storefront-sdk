@@ -2,6 +2,9 @@ import sdk from 'expose?storefront.sdk!./StorefrontSDK';
 import actions from './actions';
 import stores from './stores';
 import map from 'lodash-compat/collection/map';
+import Price from './components/Price';
+import Img from './components/Img';
+import Area from './components/Area';
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
@@ -13,3 +16,21 @@ injectTapEventPlugin();
 // Register all actions and stores
 map(actions, (action) => sdk.dispatcher.addActions(action.name, action.obj));
 map(stores, (store) => sdk.dispatcher.addStore(store.name, store.obj, sdk.dispatcher));
+
+// Register components
+const components = [
+  {
+    name: 'Price@vtex.storefront-sdk',
+    constructor: Price
+  },
+  {
+    name: 'Img@vtex.storefront-sdk',
+    constructor: Img
+  },
+  {
+    name: 'Area@vtex.storefront-sdk',
+    constructor: Area
+  }
+];
+
+sdk.dispatcher.actions.ComponentActions.register(components);
