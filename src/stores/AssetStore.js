@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import immutable from 'alt/utils/ImmutableUtil';
+import { loadScript } from 'utils/loadPage';
 
 @immutable
 class AssetStore {
@@ -13,8 +14,16 @@ class AssetStore {
     this.setState(this.state.set(id, Immutable.Map({ loading: true })));
   }
 
-  onGetAreaAssetsSuccess({id, assets}) {
+  onGetAreaAssetsSuccess({id, assets, addLatest}) {
     let state = this.state.setIn([id, 'loading'], false).setIn([id, 'payload'], assets);
+
+    if (addLatest) {
+      let requests = [];
+      assets.forEach(asset => requests.push(loadScript(asset)));
+
+      return Promise.all(requests).then(() => this.setState(state));
+    }
+
     this.setState(state);
   }
 

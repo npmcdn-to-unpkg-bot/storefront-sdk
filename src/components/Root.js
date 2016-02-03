@@ -1,19 +1,11 @@
 import React from 'react';
-import Area from './Area';
+import Placeholder from './Placeholder';
 
 class Root extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
-
-  static contextTypes = {
-    parentId: React.PropTypes.string
-  };
-
   render() {
     return (
       <div className="theme">
-        <Area
+        <Placeholder
           id="content"
           params={this.props.params}
           location={this.props.location}

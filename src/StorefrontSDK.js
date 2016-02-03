@@ -5,6 +5,7 @@ import 'expose?ReactShallowCompare!react-addons-shallow-compare';
 import 'expose?ReactRouter!react-router';
 import 'expose?ReactIntl!react-intl';
 import 'expose?ReactHelmet!react-helmet';
+import 'expose?ReactDnD!react-dnd';
 
 import map from 'lodash-compat/collection/map';
 import { createHistory, useQueries } from 'history';
@@ -15,11 +16,12 @@ import ReactDOM from 'react-dom';
 import dispatcher from './dispatcher/StorefrontDispatcher';
 import connectToStores from './utils/connectToStores';
 import App from './components/App';
-import loadPage from './utils/loadPage';
+import { loadPage } from './utils/loadPage';
 
 import * as storefrontService from 'services/Storefront';
 
 import './utils/editable';
+import { DnDConstants } from './utils/DnDConstants';
 
 let history = useQueries(createHistory)();
 
@@ -32,9 +34,10 @@ class StorefrontSDK {
 
   services = {
     storefront: storefrontService
-  }
+  };
 
-  connectToStores = connectToStores
+  connectToStores = connectToStores;
+  DnDConstants = DnDConstants;
 
   init() {
     let components = this.dispatcher.stores.ComponentStore.getState();

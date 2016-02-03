@@ -12,6 +12,7 @@ function loadScript(src) {
   return new Promise(function (resolve, reject) {
     let s = document.createElement('script');
     s.src = getAbsoluteURL(src);
+    s.async = false;
     s.onload = resolve;
     s.onerror = reject;
     let script = document.getElementsByTagName('script')[0];
@@ -71,7 +72,7 @@ function getAreaAssets(rendered, dispatcher, routeName, routeComponent, callback
   }
 }
 
-export default function loadPage(dispatcher, routeName, routeComponent, callback) {
+function loadPage(dispatcher, routeName, routeComponent, callback) {
   // Check if the component is already available
   let rendered = false;
   let componentStoreState = dispatcher.stores.ComponentStore.getState();
@@ -98,3 +99,8 @@ export default function loadPage(dispatcher, routeName, routeComponent, callback
     return dispatcher.actions.AreaActions.getAreaAssets({id: routeName});
   }
 }
+
+export {
+  loadScript,
+  loadPage
+};

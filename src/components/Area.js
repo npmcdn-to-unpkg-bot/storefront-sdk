@@ -1,7 +1,10 @@
 import React from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import './Area.less';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
 import shallowCompare from 'react-addons-shallow-compare';
 import mergeDeep from 'utils/mergeDeep';
+import droppable from 'utils/droppable';
 
 /**
  *  <Area id="home/banner"/>
@@ -30,6 +33,7 @@ var getAreaId = (props, context) => {
   return id;
 };
 
+@droppable()
 class Area extends React.Component {
   constructor(props, context) {
     super(props, context);
@@ -38,10 +42,14 @@ class Area extends React.Component {
       console.error('Area: required prop "id" not defined');
     }
 
-    this.state = this.getDataFromStores(props, context);
+    this.state = {
+      ...this.getDataFromStores(props, context),
+      loading: false
+    };
 
     dispatcher.stores.SettingsStore.listen(this.onChange);
     dispatcher.stores.ComponentStore.listen(this.onChange);
+    dispatcher.stores.EditorStore.listen(this.onIntentionChange);
   }
 
   static contextTypes = {
@@ -59,19 +67,21 @@ class Area extends React.Component {
   componentWillUnmount = () => {
     dispatcher.stores.SettingsStore.unlisten(this.onChange);
     dispatcher.stores.ComponentStore.unlisten(this.onChange);
+    dispatcher.stores.EditorStore.unlisten(this.onComponentChange);
   }
 
-  getDataFromStores = (props, context) => {
+  getDataFromStores = (props) => {
     var id = getAreaId(props, context);
 
     const componentSettings = dispatcher.stores.SettingsStore.getState().get(id);
     if (!componentSettings) {
-      return { setings: null, component: null };
+      return { settings: null, component: null };
     }
 
     const settings = componentSettings.get('settings');
-    const componentName = props.component ? props.component : componentSettings.get('component');
-    const component = dispatcher.stores.ComponentStore.getState().getIn([componentName, 'constructor']);
+    const componentName = props.component || componentSettings.get('component');
+    const ComponentStore = dispatcher.stores.ComponentStore.getState();
+    const component = ComponentStore.getIn([componentName, 'constructor']);
 
     if (!component) {
       if (typeof props.component !== 'undefined' && typeof props.component !== 'string') {
@@ -82,8 +92,8 @@ class Area extends React.Component {
     }
 
     return {
-      settings: settings ? settings : Immutable.Map(),
-      component: component,
+      component,
+      settings: settings || Immutable.Map(),
       fullId: id
     };
   }
@@ -92,22 +102,85 @@ class Area extends React.Component {
     this.setState(this.getDataFromStores(this.props, this.context));
   }
 
+  onIntentionChange = (editorStore) => {
+    this.setState({ selectedIntention: editorStore.get('selectedIntention') });
+  }
+
   shouldComponentUpdate = (nextProps, nextState) => {
     return shallowCompare(this, nextProps, nextState);
   }
 
   render() {
-    const settings = mergeDeep(this.state.settings, this.props.settings);
-    const Component = this.state.component;
-
-    if (!Component) {
-      return null;
+    if (this.state.loading) {
+      return (
+        <div className="AreaSDK">
+          <div className="sk-fading-circle">
+            <div className="sk-circle1 sk-circle" />
+            <div className="sk-circle2 sk-circle" />
+            <div className="sk-circle3 sk-circle" />
+            <div className="sk-circle4 sk-circle" />
+            <div className="sk-circle5 sk-circle" />
+            <div className="sk-circle6 sk-circle" />
+            <div className="sk-circle7 sk-circle" />
+            <div className="sk-circle8 sk-circle" />
+            <div className="sk-circle9 sk-circle" />
+            <div className="sk-circle10 sk-circle" />
+            <div className="sk-circle11 sk-circle" />
+            <div className="sk-circle12 sk-circle" />
+          </div>
+        </div>
+      );
     }
 
-    return (
-      <Component {...this.props} settings={settings.isEmpty() ? null : settings}/>
+    const {
+      compIntention,
+      isDragging,
+      connectDropTarget,
+      intention,
+      droppable
+    } = this.props;
+
+    const Component = this.state.component;
+    const settings = mergeDeep(this.state.settings, this.props.settings);
+    const componentIntention = compIntention || this.state.selectedIntention;
+    const isSelected = isDragging || componentIntention ? true : false;
+    const isIntentionEqual = componentIntention ?
+      componentIntention === intention : false;
+    const dataAttrs = droppable ?
+      {
+        'data-is-empty': false,
+        'data-is-dragging': isSelected,
+        'data-is-match': isIntentionEqual
+      } : {} ;
+
+    if (!Component) {
+      if (droppable) dataAttrs['data-is-empty'] = true;
+
+      const content = (
+        <div className="AreaSDK" {...dataAttrs} />
+      );
+
+      return droppable ? connectDropTarget(content) : content;
+    }
+
+    const content = (
+      <div className="AreaSDK" {...dataAttrs}>
+        <ReactCSSTransitionGroup
+          transitionName="componentTransition"
+          transitionEnterTimeout={200}
+          transitionLeaveTimeout={200}
+        >
+          <Component
+            {...this.props}
+            settings={settings.isEmpty() ? null : settings}
+          />
+        </ReactCSSTransitionGroup>
+      </div>
     );
+
+    return droppable ? connectDropTarget(content) : content;
   }
 }
 
 export default Area;
+
