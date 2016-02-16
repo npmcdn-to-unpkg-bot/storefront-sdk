@@ -4,7 +4,7 @@ import warning from 'warning';
 // https://davidwalsh.name/get-absolute-url
 const a = document.createElement('a');
 function getAbsoluteURL(path) {
-  a.href = '/assets/' + path;
+  a.href = path;
   return a.href;
 }
 
