@@ -5,6 +5,7 @@ import map from 'lodash-compat/collection/map';
 import Price from './components/Price';
 import Img from './components/Img';
 import Area from './components/Area';
+import Root from './components/Root';
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
@@ -30,6 +31,10 @@ const components = [
   {
     name: 'Area@vtex.storefront-sdk',
     constructor: Area
+  },
+  {
+    name: 'Root@vtex.storefront-sdk',
+    constructor: Root
   }
 ];
 
