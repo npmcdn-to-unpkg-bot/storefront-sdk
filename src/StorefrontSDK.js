@@ -45,7 +45,8 @@ class StorefrontSDK {
 
       let routeProps = {
         path: route.path,
-        key: routeName
+        key: routeName,
+        id: routeName
       };
 
       if (!component) {
@@ -63,7 +64,9 @@ class StorefrontSDK {
         }
       }
 
-      return <Route {...routeProps}/>;
+      return (
+        <Route {...routeProps}/>
+      );
     });
 
     let wrapper = (

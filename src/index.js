@@ -6,6 +6,7 @@ import Price from './components/Price';
 import Img from './components/Img';
 import Area from './components/Area';
 import Root from './components/Root';
+import Placeholder from './components/Placeholder';
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
@@ -35,6 +36,10 @@ const components = [
   {
     name: 'Root@vtex.storefront-sdk',
     constructor: Root
+  },
+  {
+    name: 'Placeholder@vtex.storefront-sdk',
+    constructor: Placeholder
   }
 ];
 

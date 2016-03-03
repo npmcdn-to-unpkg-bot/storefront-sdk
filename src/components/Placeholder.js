@@ -4,25 +4,25 @@ import shallowCompare from 'react-addons-shallow-compare';
 import mergeDeep from 'utils/mergeDeep';
 
 /**
- *  <Area id="home/banner"/>
- *  It will render the component saved at "home/banner" passing its
+ *  <Placeholder id="banner"/>
+ *  It will render the component saved at "banner" passing its
  *  settings as props.
  *
  *  You can also fix a component to be rendered:
- *  <Area component="Banner@vtex.storefront-theme" id="home/banner"/>
+ *  <Placeholder component="Banner@vtex.storefront-theme" id="banner"/>
  *  It will *always* render the component `Banner@vtex.storefront-theme`,
  *  you need to make sure to have its assets added in the page though.
  *  Storefront won't make that for you.
  *
  *  You can also pass some fixed settings that will override the saved
  *  settings:
- *  <Area id="home/banner" settings={{title: 'Hi!'}}/>
+ *  <Placeholder id="banner" settings={{title: 'Hi!'}}/>
  *
  *  Or, you can ignore the prop "id" and make everything fixed:
- *  <Area component="Banner@vtex.storefront-theme" settings={{title: 'Hi'}}/>
+ *  <Placeholder component="Banner@vtex.storefront-theme" settings={{title: 'Hi'}}/>
  */
 
-var getAreaId = (props, context) => {
+var getPlaceholderId = (props, context) => {
   var id = props.id;
   if (context.parentId) {
     id = context.parentId + '/' + id;
@@ -30,12 +30,12 @@ var getAreaId = (props, context) => {
   return id;
 };
 
-class Area extends React.Component {
+class Placeholder extends React.Component {
   constructor(props, context) {
     super(props, context);
 
     if (!props.id) {
-      console.error('Area: required prop "id" not defined');
+      console.error('Placeholder: required prop "id" not defined');
     }
 
     this.state = this.getDataFromStores(props, context);
@@ -62,7 +62,7 @@ class Area extends React.Component {
   }
 
   getDataFromStores = (props, context) => {
-    var id = getAreaId(props, context);
+    var id = getPlaceholderId(props, context);
 
     const componentSettings = dispatcher.stores.SettingsStore.getState().get(id);
     if (!componentSettings) {
@@ -75,9 +75,9 @@ class Area extends React.Component {
 
     if (!component) {
       if (typeof props.component !== 'undefined' && typeof props.component !== 'string') {
-        console.warn(`Area: "component" prop should be a component locator (eg: ComponentName@vendor.appName)`);
+        console.warn(`Placeholder: "component" prop should be a component locator (eg: ComponentName@vendor.appName)`);
       } else {
-        console.warn(`Area: Could not find component ${componentName}`);
+        console.warn(`Placeholder: Could not find component ${componentName}`);
       }
     }
 
@@ -110,4 +110,4 @@ class Area extends React.Component {
   }
 }
 
-export default Area;
+export default Placeholder;

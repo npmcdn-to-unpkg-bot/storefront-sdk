@@ -1,5 +1,6 @@
 import React from 'react';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
+import RouteWrapper from './RouteWrapper';
 
 class App extends React.Component {
   triggerRouteChange = () => {
@@ -20,9 +21,13 @@ class App extends React.Component {
   }
 
   render() {
+    let childrenWithProps = React.Children.map(this.props.children, (child) => {
+      return <RouteWrapper key={child.props.route.id} id={child.props.route.id}>{child}</RouteWrapper>;
+    });
+
     return (
       <div className="theme">
-        {this.props.children}
+        {childrenWithProps}
       </div>
     );
   }
