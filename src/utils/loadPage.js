@@ -1,5 +1,3 @@
-import warning from 'warning';
-
 // Helper function to get an absolute URL
 // https://davidwalsh.name/get-absolute-url
 const a = document.createElement('a');
@@ -10,91 +8,88 @@ function getAbsoluteURL(path) {
 
 function loadScript(src) {
   return new Promise(function (resolve, reject) {
-    let s = document.createElement('script');
+    const s = document.createElement('script');
     s.src = getAbsoluteURL(src);
+    // TODO: make sync scripts work on all browsers
+    s.async = false;
     s.onload = resolve;
     s.onerror = reject;
-    let script = document.getElementsByTagName('script')[0];
+    const script = document.getElementsByTagName('script')[0];
     script.parentNode.insertBefore(s, script);
   });
 }
 
-let listenersMap = {};
+// Declare an assets map to not load scripts unnecessarily
+let assetsMap = {};
+function getRouteAssets(dispatcher, ignoreAssetLoad) {
+  const ContextStore = dispatcher.stores.ContextStore.getState();
+  const route = ContextStore.get('route');
+  const AssetStore = dispatcher.stores.AssetStore.getState();
+  const routeAssets = AssetStore.get(route);
+  const assetsPayload = routeAssets && routeAssets.get('payload');
 
-function getAreaAssets(rendered, dispatcher, routeName, routeComponent, callback) {
-  // Get assets of the route
-  let assetStoreState = dispatcher.stores.AssetStore.getState();
-  let areaAssets = assetStoreState.get(routeName);
 
   // If the list of assets is present
-  if (areaAssets && areaAssets.get('payload')) {
-    // Unlisten to the changes of AssetStore
-    listenersMap[routeName]();
+  if (assetsPayload) {
+    // Auxiliar map to make the diff of the assets
+    let newAssetsMap = {};
+    // assets will receive the diff of the actual route scripts with the ones on the map
+    let assets;
+    // If there's no assets on the map, fill it with all the route assets
+    if (Object.keys(assetsMap).length === 0) {
+      assetsPayload.forEach(newAsset => assetsMap[newAsset] = null);
+    } else {
+      // Else lets make a diff
+      assetsPayload.forEach(newAsset => {
+        let isAssetNew;
+        for (let asset in assetsMap) {
+          if (newAsset === asset) {
+            isAssetNew = false;
+            break;
+          }
+          isAssetNew = true;
+        }
 
-    // Get the list of assets
-    let assets = areaAssets.get('payload');
+        if (isAssetNew) newAssetsMap[newAsset] = null;
+      });
 
-    // Promises array
-    let requests = [];
-    for (var i = 0; i < assets.length; i++) {
-      // Load all the scripts
-      requests.push(loadScript(assets[i]));
+      // Merge the assets maps
+      assetsMap = { ...assetsMap, ...newAssetsMap };
     }
 
-    // If we already have the component rendered on the page, goodbye!
-    if (rendered) return;
+    // If we don't need to load the scripts
+    if (ignoreAssetLoad) {
+      setTimeout(() => {
+        dispatcher.actions.AreaActions.loadPageSuccess(route);
+      }, 0);
+
+      return;
+    }
+
+    // Pass all the new assets to the var we will use to load the scripts
+    assets = Object.keys(newAssetsMap).map(newAsset => newAsset);
+    // Promises array
+    const requests = [];
+    // Load all the scripts
+    assets.forEach(asset => requests.push(loadScript(asset)));
 
     // When all files are loaded
     Promise.all(requests).then(() => {
-      // Get the component that handles the route
-      let components = dispatcher.stores.ComponentStore.getState();
-      let component = components.getIn([routeComponent, 'constructor']);
-
-      warning(component, 'Component %s not found.', routeComponent);
-
-      // Ops, the loaded assets didn't register any component with that name
-      if (!component) {
-        if (__DEV__) {
-          const ComponentNotFound = require('../components/ComponentNotFound/ComponentNotFound');
-          component = ComponentNotFound(routeName, routeComponent);
-        } else {
-          console.error(`Component ${routeComponent} not found.`);
-          component = () => <h1>Page not found</h1>;
-        }
-      }
-
-      // Render
-      callback(null, component);
-    }).catch((error) => {
-      callback(error);
+      dispatcher.actions.AreaActions.loadPageSuccess(route);
     });
   }
 }
 
-export default function loadPage(dispatcher, routeName, routeComponent, callback) {
-  // Check if the component is already available
-  let rendered = false;
-  let componentStoreState = dispatcher.stores.ComponentStore.getState();
-  let component = componentStoreState.getIn([routeComponent, 'constructor']);
+export default function loadPage(currentURL, dispatcher, ignoreAssetLoad = false) {
+  // Listener of the context store
+  const contextListener = () => {
+    getRouteAssets(dispatcher, ignoreAssetLoad);
+    dispatcher.stores.ContextStore.unlisten(contextListener);
+  };
 
-  // Return component page
-  if (component) {
-    rendered = true;
-    callback(null, component);
-  }
-
-  // Add a store listener, every change to AssetStore will call getAreaAssets()
-  listenersMap[routeName] = dispatcher.stores.AssetStore.listen(() => {
-    getAreaAssets(rendered, dispatcher, routeName, routeComponent, callback);
-  });
-
-  // Get assets of the route
-  let assetStoreState = dispatcher.stores.AssetStore.getState();
-  let areaAssets = assetStoreState.get(routeName);
-
-  // If we don't have the assets yet, request it
-  if (!areaAssets) {
-    // Get page assets
-    return dispatcher.actions.AreaActions.getAreaAssets({id: routeName});
-  }
+  // Add a store listener, every change to ContextStore will call getRouteAssets()
+  dispatcher.stores.ContextStore.listen(contextListener);
+  // Here we go! :)
+  dispatcher.actions.AreaActions.getRouteResources(currentURL);
 }
+
