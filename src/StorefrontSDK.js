@@ -1,3 +1,6 @@
+import { polyfill as PromisePolyfill } from 'es6-promise';
+PromisePolyfill();
+
 import 'expose?React!react';
 import 'expose?ReactDOM!react-dom';
 import 'expose?ReactCSSTransitionGroup!react-addons-css-transition-group';
