@@ -20,7 +20,6 @@ module.exports = {
       'react-addons-css-transition-group',
       'react-addons-shallow-compare',
       'react-tap-event-plugin',
-      'react-router',
       'react-intl',
       'react-helmet'
     ]
