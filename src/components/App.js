@@ -1,33 +1,87 @@
 import React from 'react';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
-import RouteWrapper from './RouteWrapper';
 
 class App extends React.Component {
-  triggerRouteChange = () => {
-    let route = {
-      location: this.props.location,
-      params: this.props.params
-    };
-
-    dispatcher.actions.ContextActions.changeRoute(route);
+  componentWillMount() {
+    this.setState({
+      location: this.getContextLocation(),
+      ...this.updatePage()
+    });
   }
 
   componentDidMount() {
-    this.triggerRouteChange();
+    dispatcher.stores.ContextStore.listen(this.onContextChange);
+    dispatcher.stores.AssetStore.listen(this.onAssetChange);
   }
 
-  componentDidUpdate() {
-    this.triggerRouteChange();
+  shouldComponentUpdate(_, nextState) {
+    return nextState.loaded && !!nextState.Root;
+  }
+
+  componentWillUnmount() {
+    dispatcher.stores.ContextStore.unlisten(this.onContextChange);
+    dispatcher.stores.AssetStore.unlisten(this.onAssetChange);
+  }
+
+  static childContextTypes = {
+    history: React.PropTypes.object
+  }
+
+  getChildContext() {
+    return { history: this.props.history };
+  }
+
+  onContextChange = () => this.setState({ location: this.getContextLocation() })
+
+  onAssetChange = () => this.setState({ ...this.updatePage() })
+
+  getContextLocation = () => {
+    const ContextStore = dispatcher.stores.ContextStore.getState();
+    return ContextStore.get('location');
+  }
+
+  getAssetLoading = () => {
+    const ContextStore = dispatcher.stores.ContextStore.getState();
+    const AssetStore = dispatcher.stores.AssetStore.getState();
+    const route = ContextStore.get('route');
+
+    return AssetStore.getIn([route, 'loading']);
+  }
+
+  getRootComponent = () => {
+    const ContextStore = dispatcher.stores.ContextStore.getState();
+    const ComponentStore = dispatcher.stores.ComponentStore.getState();
+    const rootName = ContextStore.get('rootComponent');
+
+    return ComponentStore.getIn([rootName, 'constructor']);
+  }
+
+  updatePage = () => {
+    const isPageLoading = this.getAssetLoading();
+
+    if (isPageLoading === false) {
+      const ContextStore = dispatcher.stores.ContextStore.getState();
+      return {
+        Root: this.getRootComponent(),
+        params: ContextStore.get('params'),
+        loaded: true
+      };
+    }
+
+    return { loaded: false };
   }
 
   render() {
-    let childrenWithProps = React.Children.map(this.props.children, (child) => {
-      return <RouteWrapper key={child.props.route.id} id={child.props.route.id}>{child}</RouteWrapper>;
-    });
+    const { loaded, params, Root } = this.state;
+    const location = this.state.location ? this.state.location.toJS() : {};
+
+    if (!loaded) {
+      return null;
+    }
 
     return (
       <div className="theme">
-        {childrenWithProps}
+        <Root location={location} params={params} />
       </div>
     );
   }
