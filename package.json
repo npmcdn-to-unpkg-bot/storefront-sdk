@@ -17,6 +17,7 @@
   "dependencies": {
     "alt": "^0.17.4",
     "debounce": "^1.0.0",
+    "history": "^2.0.1",
     "hoist-non-react-statics": "^1.0.3",
     "invariant": "^2.2.0",
     "lodash-compat": "^3.10.1",
