@@ -2,26 +2,23 @@ import 'expose?React!react';
 import 'expose?ReactDOM!react-dom';
 import 'expose?ReactCSSTransitionGroup!react-addons-css-transition-group';
 import 'expose?ReactShallowCompare!react-addons-shallow-compare';
-import 'expose?ReactRouter!react-router';
 import 'expose?ReactIntl!react-intl';
 import 'expose?ReactHelmet!react-helmet';
 
-import map from 'lodash-compat/collection/map';
 import { createHistory, useQueries } from 'history';
-import { Router, Route } from 'react-router';
 import { IntlProvider } from 'react-intl';
 import ReactDOM from 'react-dom';
 
 import dispatcher from './dispatcher/StorefrontDispatcher';
 import connectToStores from './utils/connectToStores';
-import App from './components/App';
+import Root from './components/Root';
 import loadPage from './utils/loadPage';
 
 import * as storefrontService from 'services/Storefront';
 
 import './utils/editable';
 
-let history = useQueries(createHistory)();
+const history = useQueries(createHistory)();
 
 class StorefrontSDK {
   dispatcher = dispatcher;
@@ -36,67 +33,36 @@ class StorefrontSDK {
 
   connectToStores = connectToStores
 
-  init() {
-    let components = this.dispatcher.stores.ComponentStore.getState();
+  init = () => {
+    // Set history listener for navigation
+    history.listen(location => {
+      // Update the location
+      dispatcher.actions.ContextActions.changeLocation(location);
+      const currentURL = location.pathname + location.search;
 
-    // Create routes based on the declared storefront components
-    let children = map(window.storefront.routes, (route, routeName) => {
-      let component = components.getIn([route.component, 'constructor']);
-
-      let routeProps = {
-        path: route.path,
-        key: routeName,
-        id: routeName
-      };
-
-      if (!component) {
-        routeProps.getComponents = (location, callback) => {
-          loadPage(this.dispatcher, routeName, route.component, callback);
-        };
+      // Start the route loading cycle!
+      if (location.action === 'POP') {
+        // If there's a POP action, then we already have the assets
+        // so we ignore loading the scripts by passing true
+        // on the third parameter
+        loadPage(currentURL, dispatcher, true);
       } else {
-        routeProps.component = component;
-
-        if (component.onEnter) {
-          routeProps.onEnter = component.onEnter;
-        }
-        if (component.onLeave) {
-          routeProps.onLeave = component.onLeave;
-        }
+        // It's a push or replace action, then we load the scripts
+        loadPage(currentURL, dispatcher);
       }
-
-      return (
-        <Route {...routeProps}/>
-      );
     });
 
-    let wrapper = (
-      <Route component={App}>
-        {children}
-      </Route>
-    );
-
-    if (components.get('AppEditor')) {
-      let AppEditor = components.getIn(['AppEditor', 'constructor']);
-      wrapper = (
-        <Route component={AppEditor}>
-          {wrapper}
-        </Route>
-      );
-    }
-
     // Finally, render
-    let locale = this.dispatcher.stores.ContextStore.getState().getIn(['culture', 'language']);
+    const locale = this.dispatcher.stores.ContextStore.getState().getIn(['culture', 'language']);
     ReactIntl.addLocaleData(ReactIntlLocaleData[locale]);
     ReactDOM.render(
       <IntlProvider locale={locale}>
-        <Router history={this.history}>
-          {wrapper}
-        </Router>
+        <Root history={history} />
       </IntlProvider>
     , document.getElementById('storefront-container'));
   }
 }
 
-let sdk = new StorefrontSDK();
+const sdk = new StorefrontSDK();
 
 export default sdk;
