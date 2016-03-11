@@ -27,10 +27,30 @@ class ResourceStore {
   }
 
   onGetAreaResourcesError({currentURL, error}) {
-    let newState = this.state.withMutations(map =>
-      map.setIn([currentURL, 'resources'], null)
-         .setIn([currentURL, 'error', error])
+    let newState = this.state.withMutations(state =>
+      state
+        .setIn([currentURL, 'resources'], null)
+        .setIn([currentURL, 'error'], error)
     );
+
+    this.setState(newState);
+  }
+
+  onRouteResourcesResources(currentURL) {
+    this.setState(this.state.set(currentURL, Immutable.Map()));
+  }
+
+  onGetRouteResourcesSuccess({currentURL, resources}) {
+    this.setState(getDataFromResources(this.state, currentURL, resources));
+  }
+
+  onGetRouteResourcesFail({currentURL, error}) {
+    let newState = this.state.withMutations(state =>
+      state
+        .setIn([currentURL, 'resources'], null)
+        .setIn([currentURL, 'error'], error)
+    );
+
     this.setState(newState);
   }
 }

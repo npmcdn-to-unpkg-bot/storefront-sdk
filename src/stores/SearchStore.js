@@ -69,6 +69,10 @@ class SearchStore {
   onGetAreaResourcesSuccess({resources}) {
     this.setState(getDataFromResources(this.state, resources));
   }
+
+  onGetRouteResourcesSuccess({ resources }) {
+    this.setState(getDataFromResources(this.state, resources.resources));
+  }
 }
 
 export default SearchStore;
