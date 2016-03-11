@@ -1,8 +1,8 @@
 var webpack = require('webpack');
 var path = require('path');
 var pkg = require('./package.json');
-var meta = require('./meta.json');
-var publicPath = '/assets/@' + meta.vendor + '.' + pkg.name + '/';
+var manifest = require('./manifest.json');
+var publicPath = '/assets/@' + manifest.vendor + '.' + pkg.name + '/';
 var production = process.env.NODE_ENV === 'production';
 
 var commonsConfig = {
@@ -115,7 +115,7 @@ module.exports = {
     publicPath: publicPath,
     filename: production ? '[name]/' + pkg.name + '.js' : '[name]/' + pkg.name + '-dev.js',
     chunkFilename: production ? pkg.name + '-[name].js' : pkg.name + '-[name]-dev.js',
-    jsonpFunction: 'webpackJsonp_' + meta.vendor.replace('-', '') + '_' + meta.name.replace('-', ''),
+    jsonpFunction: 'webpackJsonp_' + manifest.vendor.replace('-', '') + '_' + manifest.name.replace('-', ''),
     devtoolModuleFilenameTemplate: 'webpack:///' + pkg.name + '/[resource]?[id]-[hash]'
   },
 
