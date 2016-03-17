@@ -4,8 +4,7 @@ import stores from './stores';
 import map from 'lodash-compat/collection/map';
 import Price from './components/Price';
 import Img from './components/Img';
-import Area from './components/Area';
-import Root from './components/Root';
+import Link from './components/Link';
 import Placeholder from './components/Placeholder';
 
 // Needed for onTouchTap
@@ -30,12 +29,8 @@ const components = [
     constructor: Img
   },
   {
-    name: 'Area@vtex.storefront-sdk',
-    constructor: Area
-  },
-  {
-    name: 'Root@vtex.storefront-sdk',
-    constructor: Root
+    name: 'Link@vtex.storefront-sdk',
+    constructor: Link
   },
   {
     name: 'Placeholder@vtex.storefront-sdk',
