@@ -2,9 +2,6 @@
  * This is a dumbed down implementation of the Link component
  * found on the react-router package.
  *
- * One more difference would be the use of onTouchTap instead of onClick.
- * For mobile users this will make the experience smoother.
- *
  * Thanks for the work of all the collaborators of the react-router project!
  * Please take a look at their work, it'll probably be super useful for you :)
  */
