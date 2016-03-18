@@ -1,6 +1,6 @@
 class RouteActions {
-  changeRoute(route) {
-    return route;
+  changeLocation(location) {
+    return location;
   }
 }
 

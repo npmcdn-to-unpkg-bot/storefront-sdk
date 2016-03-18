@@ -22,49 +22,62 @@ import mergeDeep from 'utils/mergeDeep';
  *  <Placeholder component="Banner@vtex.storefront-theme" settings={{title: 'Hi'}}/>
  */
 
-var getPlaceholderId = (props, context) => {
-  var id = props.id;
-  if (context.parentId) {
-    id = context.parentId + '/' + id;
-  }
-  return id;
-};
 
 class Placeholder extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-
-    if (!props.id) {
-      console.error('Placeholder: required prop "id" not defined');
-    }
-
-    this.state = this.getDataFromStores(props, context);
-
-    dispatcher.stores.SettingsStore.listen(this.onChange);
-    dispatcher.stores.ComponentStore.listen(this.onChange);
-  }
-
   static contextTypes = {
     parentId: React.PropTypes.string
-  };
+  }
 
   static childContextTypes = {
     parentId: React.PropTypes.string
-  };
+  }
 
   getChildContext() {
     return { parentId: this.state.fullId };
   }
 
-  componentWillUnmount = () => {
+  componentWillMount() {
+    if (!this.props.id) {
+      console.error('Placeholder: required prop "id" not defined');
+    }
+
+    this.state = this.getDataFromStores(this.props, this.context);
+
+    dispatcher.stores.SettingsStore.listen(this.onChange);
+    dispatcher.stores.ComponentStore.listen(this.onChange);
+  }
+
+  componentWillReceiveProps(props, context) {
+    this.setState(this.getDataFromStores(props, context));
+  }
+
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    const currentParentId = this.context && this.context.parentId;
+    const nextParentId = nextContext && nextState.parentId;
+    const isParentIdEqual = currentParentId === nextParentId;
+
+    return !isParentIdEqual || shallowCompare(this, nextProps, nextState);
+  }
+
+  componentWillUnmount() {
     dispatcher.stores.SettingsStore.unlisten(this.onChange);
     dispatcher.stores.ComponentStore.unlisten(this.onChange);
   }
 
-  getDataFromStores = (props, context) => {
-    var id = getPlaceholderId(props, context);
+  getPlaceholderId = (props, context) => {
+    let id = props.id;
 
+    if (context.parentId) {
+      id = context.parentId + '/' + id;
+    }
+
+    return id;
+  }
+
+  getDataFromStores = (props, context) => {
+    const id = this.getPlaceholderId(props, context);
     const componentSettings = dispatcher.stores.SettingsStore.getState().get(id);
+
     if (!componentSettings) {
       return { setings: null, component: null };
     }
@@ -92,10 +105,6 @@ class Placeholder extends React.Component {
     this.setState(this.getDataFromStores(this.props, this.context));
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    return shallowCompare(this, nextProps, nextState);
-  }
-
   render() {
     const settings = mergeDeep(this.state.settings, this.props.settings);
     const Component = this.state.component;
@@ -105,7 +114,11 @@ class Placeholder extends React.Component {
     }
 
     return (
-      <Component {...this.props} settings={settings.isEmpty() ? null : settings}/>
+      <Component
+        {...this.props}
+        id={this.state.fullId}
+        settings={settings.isEmpty() ? null : settings}
+      />
     );
   }
 }
