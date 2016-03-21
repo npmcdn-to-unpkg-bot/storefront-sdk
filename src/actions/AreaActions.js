@@ -1,10 +1,33 @@
 import * as storefrontService from 'services/Storefront';
 
 class AreaActions {
-  getAreaAssets({id}) {
+  getAreaAssets({id, addLatest = false, retry = false}) {
     storefrontService.getAreaAssets({id})
-      .then((response) => this.actions.getAreaAssetsSuccess({id, assets: response.data}))
-      .catch((error) => this.actions.getAreaAssetsFail({id, error}));
+      .then((response) => {
+        if (retry && this.getAreaAssetsInterval) {
+          clearInterval(this.getAreaAssetsInterval.ref);
+        }
+
+        this.actions.getAreaAssetsSuccess({id, assets: response.data, addLatest});
+      })
+      .catch((error) => {
+        if (retry && error.status === 404) {
+          if (!this.getAreaAssetsInterval) {
+            this.getAreaAssetsInterval = {
+              ref: setInterval(() => {
+                this.actions.getAreaAssets(arguments[0]);
+              }, 500),
+              called: 0
+            };
+          } else if (this.getAreaAssetsInterval.called === 20) {
+            clearInterval(this.getAreaAssetsInterval.ref);
+          } else {
+            this.getAreaAssetsInterval.called += 1;
+          }
+        }
+
+        this.actions.getAreaAssetsFail({id, error});
+      });
 
     return arguments[0];
   }

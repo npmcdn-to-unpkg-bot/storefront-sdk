@@ -1,39 +1,37 @@
 import React from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import './Area.less';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
 import shallowCompare from 'react-addons-shallow-compare';
 import mergeDeep from 'utils/mergeDeep';
 import droppable from 'utils/droppable';
-import keys from 'lodash-compat/object/keys';
-import isImplementsEqual from 'utils/implements';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import './Area.less';
 
 /**
- *  <Placeholder id="banner"/>
- *  It will render the component saved at "banner" passing its
+ *  <Area id="home/banner"/>
+ *  It will render the component saved at "home/banner" passing its
  *  settings as props.
  *
  *  You can also fix a component to be rendered:
- *  <Placeholder component="Banner@vtex.storefront-theme" id="banner"/>
+ *  <Area component="Banner@vtex.storefront-theme" id="home/banner"/>
  *  It will *always* render the component `Banner@vtex.storefront-theme`,
  *  you need to make sure to have its assets added in the page though.
  *  Storefront won't make that for you.
  *
  *  You can also pass some fixed settings that will override the saved
  *  settings:
- *  <Placeholder id="banner" settings={{title: 'Hi!'}}/>
+ *  <Area id="home/banner" settings={{title: 'Hi!'}}/>
  *
  *  Or, you can ignore the prop "id" and make everything fixed:
- *  <Placeholder component="Banner@vtex.storefront-theme" settings={{title: 'Hi'}}/>
+ *  <Area component="Banner@vtex.storefront-theme" settings={{title: 'Hi'}}/>
  */
 
 @droppable()
-class Placeholder extends React.Component {
+class Area extends React.Component {
   constructor(props) {
     super(props);
 
     if (!props.id) {
-      console.error('Placeholder: required prop "id" not defined');
+      console.error('Area: required prop "id" not defined');
     }
 
     this.state = {
@@ -43,35 +41,39 @@ class Placeholder extends React.Component {
 
     dispatcher.stores.SettingsStore.listen(this.onChange);
     dispatcher.stores.ComponentStore.listen(this.onChange);
-    dispatcher.stores.EditorStore.listen(this.onComponentChange);
+    dispatcher.stores.EditorStore.listen(this.onIntentionChange);
   }
 
   componentWillUnmount = () => {
     dispatcher.stores.SettingsStore.unlisten(this.onChange);
     dispatcher.stores.ComponentStore.unlisten(this.onChange);
-    dispatcher.stores.EditorStore.unlisten(this.onComponentChange);
+    dispatcher.stores.EditorStore.listen(this.onIntentionChange);
   }
 
   getDataFromStores = (props) => {
-    const componentSettings = dispatcher.stores.SettingsStore.getState().get(props.parentId);
+    const SettingsStore = dispatcher.stores.SettingsStore.getState();
+    const componentSettings = SettingsStore.get(props.id);
+
     if (!componentSettings) {
-      return { setings: null, component: null };
+      return { settings: null, component: null };
     }
 
     const settings = componentSettings.get('settings');
-    const componentName = props.component ? props.component : componentSettings.get('component');
-    const component = dispatcher.stores.ComponentStore.getState().getIn([componentName, 'constructor']);
+    const componentName = props.component || componentSettings.get('component');
+    const ComponentStore = dispatcher.stores.ComponentStore.getState();
+    const component = ComponentStore.getIn([componentName, 'constructor']);
 
     if (!component) {
       if (typeof props.component !== 'undefined' && typeof props.component !== 'string') {
-        console.warn(`Placeholder: "component" prop should be a component locator (eg: ComponentName@vendor.appName)`);
+        console.warn(`Area: "component" prop should be a component locator (eg: ComponentName@vendor.appName)`);
       } else {
-        console.warn(`Placeholder: Could not find component ${componentName}`);
+        console.warn(`Area: Could not find component ${componentName}`);
       }
     }
+
     return {
-      settings: settings ? settings : Immutable.Map(),
-      component: component
+      component,
+      settings: settings || Immutable.Map()
     };
   }
 
@@ -79,8 +81,8 @@ class Placeholder extends React.Component {
     this.setState(this.getDataFromStores(this.props));
   }
 
-  onComponentChange = (editorStore) => {
-    this.setState({ selectedComponent: editorStore.get('selectedComponent') });
+  onIntentionChange = (editorStore) => {
+    this.setState({ selectedIntention: editorStore.get('selectedIntention') });
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
@@ -110,29 +112,23 @@ class Placeholder extends React.Component {
     }
 
     const {
+      compIntention,
       isDragging,
       connectDropTarget,
-      parentId,
-      id,
-      droppable,
-      component,
-      selectedComponent,
-      components
+      intention,
+      droppable
     } = this.props;
-
-    const settings = mergeDeep(this.state.settings, this.props.settings);
     const Component = this.state.component;
-
-    const isSelected = isDragging || this.state.selectedComponent ? true : false;
-
-    const newParentId = parentId.substr(0, parentId.indexOf(`/${id}`));
-    const isComponentEqual = isImplementsEqual(components, id, selectedComponent, newParentId, 'home');
-
+    const settings = mergeDeep(this.state.settings, this.props.settings);
+    const componentIntention = compIntention || this.state.selectedIntention;
+    const isSelected = isDragging || componentIntention ? true : false;
+    const isIntentionEqual = componentIntention ?
+      componentIntention === intention : false;
     const dataAttrs = droppable ?
       {
         'data-is-empty': false,
         'data-is-dragging': isSelected,
-        'data-is-match': isComponentEqual
+        'data-is-match': isIntentionEqual
       } : {} ;
 
     if (!Component) {
@@ -164,4 +160,5 @@ class Placeholder extends React.Component {
   }
 }
 
-export default Placeholder;
+export default Area;
+

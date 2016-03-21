@@ -8,6 +8,7 @@ import SettingsStore from './SettingsStore';
 import ResourceStore from './ResourceStore';
 import CategoryStore from './CategoryStore';
 import FacetsStore from './FacetsStore';
+import RouteStore from './RouteStore';
 
 let stores = [
   {name: 'AssetStore', obj: AssetStore},
@@ -19,7 +20,8 @@ let stores = [
   {name: 'SettingsStore', obj: SettingsStore},
   {name: 'ResourceStore', obj: ResourceStore},
   {name: 'CategoryStore', obj: CategoryStore},
-  {name: 'FacetsStore', obj: FacetsStore}
+  {name: 'FacetsStore', obj: FacetsStore},
+  {name: 'RouteStore', obj: RouteStore}
 ];
 
 export default stores;
