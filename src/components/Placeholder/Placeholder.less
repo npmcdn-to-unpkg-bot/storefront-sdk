@@ -1,0 +1,47 @@
+@import "~utils/styles/variables";
+@import "~utils/styles/sk-circles/sk-circles";
+@import "./animation";
+
+.Placeholder {
+
+  //Mocked Variable
+  //Ideally, this should be &[data-is-editing="true"]
+  //But for some reason the data attr is not being rendered on the page
+
+  &[data-is-editing="true"] {
+    border: 2px solid @editor-dark-soft;
+    border-radius: 6px;
+    margin: 5px 0.5%;
+    min-height: 100px;
+    transition: background 0.1s ease-in, border 0.1s ease-in;
+    width: 99%;
+
+    &:hover {
+      background: fade(@editor-main-soft, 40%);
+      border: 2px solid @editor-main;
+      cursor: pointer;
+      transition: background 0.1s ease-in, border 0.1s ease-in;
+    }
+  }
+
+  &[data-is-empty="true"] {
+    width: auto;
+    margin: 3px 0;
+    height: 400px;
+    border-radius: 6px;
+  }
+
+  &[data-is-dragging="true"]&[data-is-match="true"] {
+    width: 98%;
+    padding: 6px;
+    border: 3px solid #6a3c9b;
+  }
+
+  &[data-is-empty="true"]&[data-is-dragging="false"]&[data-is-match="false"] {
+    border: 3px dotted rgba(0, 0, 0, 0.8);
+  }
+
+  &[data-is-empty="true"]&[data-is-dragging="true"]&[data-is-match="false"] {
+    border: 2px solid red;
+  }
+}

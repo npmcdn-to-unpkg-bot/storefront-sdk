@@ -2,11 +2,11 @@ import sdk from 'expose?storefront.sdk!./StorefrontSDK';
 import actions from './actions';
 import stores from './stores';
 import map from 'lodash-compat/collection/map';
-import Price from './components/Price';
-import Img from './components/Img';
-import Link from './components/Link';
-import Placeholder from './components/Placeholder';
-import Root from './components/Root';
+import Price from 'components/Price';
+import Img from 'components/Img';
+import Link from 'components/Link';
+import Placeholder from 'components/Placeholder/Placeholder.js';
+import Root from 'components/Root';
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release

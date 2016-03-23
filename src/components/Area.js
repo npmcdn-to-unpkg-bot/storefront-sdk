@@ -161,4 +161,3 @@ class Area extends React.Component {
 }
 
 export default Area;
-

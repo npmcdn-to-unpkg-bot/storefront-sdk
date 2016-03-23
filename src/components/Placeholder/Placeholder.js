@@ -1,12 +1,17 @@
 import React from 'react';
-import dispatcher from '../dispatcher/StorefrontDispatcher';
+import dispatcher from '../../dispatcher/StorefrontDispatcher';
 import shallowCompare from 'react-addons-shallow-compare';
 import mergeDeep from 'utils/mergeDeep';
 import droppable from 'utils/droppable';
+<<<<<<< HEAD:src/components/Placeholder.js
 import keys from 'lodash-compat/object/keys';
 import { isImplementsEqual } from 'utils/implements';
+=======
+//import keys from 'lodash-compat/object/keys';
+import isImplementsEqual from 'utils/implements';
+>>>>>>> Add style for default placeholder on hover (WIP):src/components/Placeholder/Placeholder.js
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import './Area.less';
+import './Placeholder.less';
 
 /**
  *  <Placeholder id="banner"/>
@@ -114,7 +119,7 @@ class Placeholder extends React.Component {
 
     if (this.state.loading) {
       return (
-        <div className="AreaSDK">
+        <div className="Placeholder" data-is-dropping={true}>
           <div className="sk-fading-circle">
             <div className="sk-circle1 sk-circle" />
             <div className="sk-circle2 sk-circle" />
@@ -134,6 +139,16 @@ class Placeholder extends React.Component {
     }
 
 
+    const {
+      isDragging,
+      connectDropTarget,
+      parentId,
+      id,
+      droppable,
+      //component,
+      selectedComponent,
+      components
+    } = this.props;
 
     const settings = mergeDeep(this.state.settings, this.props.settings);
     const Component = this.state.component;
@@ -147,21 +162,22 @@ class Placeholder extends React.Component {
       {
         'data-is-empty': false,
         'data-is-dragging': isSelected,
-        'data-is-match': isComponentEqual
+        'data-is-match': isComponentEqual,
+        'data-is-editing': true
       } : {} ;
 
     if (!Component) {
       if (droppable) dataAttrs['data-is-empty'] = true;
 
       const content = (
-        <div className="AreaSDK" {...dataAttrs} />
+        <div className="Placeholder" {...dataAttrs} />
       );
 
       return droppable ? connectDropTarget(content) : content;
     }
 
     const content = (
-      <div className="AreaSDK" {...dataAttrs}>
+      <div className="Placeholder" {...dataAttrs}>
         <ReactCSSTransitionGroup
           transitionName="componentTransition"
           transitionEnterTimeout={200}
