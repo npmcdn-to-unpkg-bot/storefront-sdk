@@ -119,7 +119,7 @@ class Placeholder extends React.Component {
 
     if (this.state.loading) {
       return (
-        <div className="Placeholder" data-is-dropping={true}>
+        <div className="Placeholder clearfix" data-is-dropping={true}>
           <div className="sk-fading-circle">
             <div className="sk-circle1 sk-circle" />
             <div className="sk-circle2 sk-circle" />
@@ -160,7 +160,6 @@ class Placeholder extends React.Component {
 
     const dataAttrs = droppable ?
       {
-        'data-is-empty': false,
         'data-is-dragging': isSelected,
         'data-is-match': isComponentEqual,
         'data-is-editing': true
@@ -170,14 +169,14 @@ class Placeholder extends React.Component {
       if (droppable) dataAttrs['data-is-empty'] = true;
 
       const content = (
-        <div className="Placeholder" {...dataAttrs} />
+        <div className="Placeholder clearfix" {...dataAttrs} />
       );
 
       return droppable ? connectDropTarget(content) : content;
     }
 
     const content = (
-      <div className="Placeholder" {...dataAttrs}>
+      <div className="Placeholder clearfix" {...dataAttrs}>
         <ReactCSSTransitionGroup
           transitionName="componentTransition"
           transitionEnterTimeout={200}

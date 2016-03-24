@@ -2,46 +2,96 @@
 @import "~utils/styles/sk-circles/sk-circles";
 @import "./animation";
 
+.isEditing() {
+  border: 2px solid @editor-dark-soft;
+  border-radius: 6px;
+  margin-left: 0.5%;
+  margin-right: 0.5%;
+  padding: 5px 3px;
+  transition: background 0.1s ease-in, border 0.1s ease-in;
+  width: 99%;
+
+  &:hover {
+    background: fade(@editor-main-soft, 40%);
+    border: 2px solid @editor-main;
+    cursor: pointer;
+    transition: background 0.1s ease-in, border 0.1s ease-in;
+  }
+}
+
 .Placeholder {
 
-  //Mocked Variable
-  //Ideally, this should be &[data-is-editing="true"]
-  //But for some reason the data attr is not being rendered on the page
+  & + & {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
 
+  //Default Placeholder (with edit mode turned on)
   &[data-is-editing="true"] {
-    border: 2px solid @editor-dark-soft;
-    border-radius: 6px;
-    margin: 5px 0.5%;
+    .isEditing();
+  }
+
+  //Empty Placeholder
+  &:empty {
+    .isEditing();
+    border-style: dashed;
     min-height: 100px;
-    transition: background 0.1s ease-in, border 0.1s ease-in;
-    width: 99%;
 
     &:hover {
-      background: fade(@editor-main-soft, 40%);
-      border: 2px solid @editor-main;
-      cursor: pointer;
+      border-style: dashed;
+    }
+
+  }
+
+  //Dragging turned on, Dropping Allowed
+  &[data-is-dragging="true"]&[data-is-match="true"] {
+    .isEditing();
+    background: fade(@green-matter, 10%);
+    border: 2px solid @green-matter;
+
+    &:hover {
+      background: fade(@green-matter, 20%);
+      border: 2px solid @green-matter;
+    }
+  }
+
+  //Dragging turned on, Dropping Allowed, on Empty Placeholder
+  &[data-is-dragging="true"]&[data-is-match="true"]&[data-is-empty="true"] {
+    .isEditing();
+    background: fade(@green-matter, 10%);
+    border: 2px solid @green-matter;
+    border-style: dashed;
+
+    &:hover {
+      background: fade(@green-matter, 20%);
+      border: 2px solid @green-matter;
+      border-style: dashed;
+    }
+  }
+
+  //Dragging turned on, Dropping Not Allowed
+  &[data-is-dragging="true"]&[data-is-match="false"] {
+    .isEditing();
+
+    &:hover {
+      background: transparent;
+      border: 2px solid @editor-dark-soft;
+      cursor: not-allowed;
       transition: background 0.1s ease-in, border 0.1s ease-in;
     }
   }
 
-  &[data-is-empty="true"] {
-    width: auto;
-    margin: 3px 0;
-    height: 400px;
-    border-radius: 6px;
-  }
+  //Dragging turned on, Dropping Not Allowed, Empty Placeholder
+  &[data-is-dragging="true"]&[data-is-match="false"]&[data-is-empty="true"] {
+    .isEditing();
+    border-style: dashed;
 
-  &[data-is-dragging="true"]&[data-is-match="true"] {
-    width: 98%;
-    padding: 6px;
-    border: 3px solid #6a3c9b;
-  }
-
-  &[data-is-empty="true"]&[data-is-dragging="false"]&[data-is-match="false"] {
-    border: 3px dotted rgba(0, 0, 0, 0.8);
-  }
-
-  &[data-is-empty="true"]&[data-is-dragging="true"]&[data-is-match="false"] {
-    border: 2px solid red;
+    &:hover {
+      background: transparent;
+      border: 2px solid @editor-dark-soft;
+      border-style: dashed;
+      cursor: not-allowed;
+      transition: background 0.1s ease-in, border 0.1s ease-in;
+    }
   }
 }
