@@ -1,5 +1,3 @@
-import keys from 'lodash-compat/object/keys';
-
 function isComponentImplements(placeholderId, parentId, componentImplements, components, currentRoute) {
   if (!componentImplements) {
     return false;
@@ -42,14 +40,7 @@ function getRouteInstances(instances, currentRoute) {
 }
 
 function getParentDescriptor (parentId, components, currentRoute) {
-  /*let components = {
-    'HomePage@vtex.storefront-theme': {
-      'instances': ['home/content/body'],
-      'placeholders': ['shelf', 'banner']
-    }
-  };
-  */
-  for (var componentName of keys(components)) {
+  for (var componentName of Object.keys(components)) {
     let componentDescriptor = components[componentName];
     let routeInstaces = getRouteInstances(componentDescriptor.instances, currentRoute);
 
@@ -61,16 +52,33 @@ function getParentDescriptor (parentId, components, currentRoute) {
   return null;
 }
 
-function getImplements(components, selectedComponent) {
-  for (var component of keys(components)) {
+function getComponent(components, selectedComponent) {
+  for (var component of Object.keys(components)) {
     if (selectedComponent === component) {
-      return components[component].implements;
+      return components[component];
     }
   }
   return [];
 }
 
-export default function isImplementsEqual(components, placeholderId, selectedComponent, parentId, currentRoute) {
-  var componentImplements = getImplements(components, selectedComponent);
-  return isComponentImplements(placeholderId, parentId, componentImplements, components, currentRoute);
+function isAlreadyInstancied(components, parentId, selectedComponent) {
+  var component = getComponent(components, selectedComponent);
+
+  for (var instance of component.instances) {
+    if (instance.ids.indexOf(parentId) > -1) {
+      return true;
+    }
+  }
+  return false;
 }
+
+function isImplementsEqual(components, placeholderId, selectedComponent, parentId, currentRoute) {
+  var component = getComponent(components, selectedComponent);
+  return isComponentImplements(placeholderId, parentId, component.implements,
+    components, currentRoute);
+}
+
+export {
+  isImplementsEqual,
+  isAlreadyInstancied
+};

@@ -4,7 +4,7 @@ import shallowCompare from 'react-addons-shallow-compare';
 import mergeDeep from 'utils/mergeDeep';
 import droppable from 'utils/droppable';
 import keys from 'lodash-compat/object/keys';
-import isImplementsEqual from 'utils/implements';
+import { isImplementsEqual } from 'utils/implements';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import './Area.less';
 

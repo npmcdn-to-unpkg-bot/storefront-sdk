@@ -2,15 +2,33 @@ import React from 'react';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
 import { DropTarget } from 'react-dnd';
 import { DnDConstants } from 'utils/DnDConstants';
-import isImplementsEqual from '../utils/implements';
+import { isAlreadyInstancied, isImplementsEqual } from '../utils/implements';
 
 const { ItemTypes } = DnDConstants;
+
+const openEditor = (component, props) => {
+  const EditorActions = dispatcher.actions.EditorActions;
+  EditorActions.openEditor({
+    component: component,
+    componentProps: props
+  });
+};
 
 const editorContainerTarget = {
   drop(props, monitor, component) {
     const AssetStore = dispatcher.stores.AssetStore;
     const SettingsStore = dispatcher.stores.SettingsStore;
     const AreaActions = dispatcher.actions.AreaActions;
+
+    const { components, parentId } = props;
+    const selectedComponent = monitor.getItem().component;
+
+    if (isAlreadyInstancied(components, parentId, selectedComponent)) {
+      openEditor(monitor.getItem().component, component.props);
+
+      const installPromise = new Promise(resolve => { resolve(); });
+      return { installPromise };
+    }
 
     const settings = {
       ...monitor.getItem(),
