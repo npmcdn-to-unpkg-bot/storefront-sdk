@@ -24,7 +24,12 @@ const editorContainerTarget = {
     const selectedComponent = monitor.getItem().component;
 
     if (isAlreadyInstancied(components, parentId, selectedComponent)) {
-      openEditor(monitor.getItem().component, component.props);
+      const settings = {
+        settings: component.state.settings,
+        id: parentId
+      };
+
+      openEditor(monitor.getItem().component, settings);
 
       const installPromise = new Promise(resolve => { resolve(); });
       return { installPromise };
@@ -34,6 +39,8 @@ const editorContainerTarget = {
       ...monitor.getItem(),
       id: component.props.parentId
     };
+
+    openEditor(monitor.getItem().component, settings);
 
     const assetListener = (resolve) => {
       const assetListenerWithResolve = (assets) => {

@@ -38,7 +38,8 @@ class Placeholder extends React.Component {
 
     this.state = {
       ...this.getDataFromStores(props),
-      loading: false
+      loading: false,
+      openEditorId: ''
     };
 
     dispatcher.stores.SettingsStore.listen(this.onChange);
@@ -54,6 +55,7 @@ class Placeholder extends React.Component {
 
   getDataFromStores = (props) => {
     const componentSettings = dispatcher.stores.SettingsStore.getState().get(props.parentId);
+
     if (!componentSettings) {
       return { setings: null, component: null };
     }
@@ -80,7 +82,14 @@ class Placeholder extends React.Component {
   }
 
   onComponentChange = (editorStore) => {
-    this.setState({ selectedComponent: editorStore.get('selectedComponent') });
+    const editor = editorStore.get('editor');
+    const componentProps = editor ? editor.get('componentProps') : '';
+    this.setState(
+      {
+        selectedComponent: editorStore.get('selectedComponent'),
+        openEditorId: componentProps.id
+      }
+    );
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
@@ -88,6 +97,21 @@ class Placeholder extends React.Component {
   }
 
   render() {
+    const {
+      isDragging,
+      connectDropTarget,
+      parentId,
+      id,
+      droppable,
+      component,
+      selectedComponent,
+      components
+    } = this.props;
+
+    if (this.state.openEditorId === parentId) {
+      console.log('ESTOU EDITANDO O COMPONENTE', this.state.openEditorId);
+    }
+
     if (this.state.loading) {
       return (
         <div className="AreaSDK">
@@ -109,16 +133,7 @@ class Placeholder extends React.Component {
       );
     }
 
-    const {
-      isDragging,
-      connectDropTarget,
-      parentId,
-      id,
-      droppable,
-      component,
-      selectedComponent,
-      components
-    } = this.props;
+
 
     const settings = mergeDeep(this.state.settings, this.props.settings);
     const Component = this.state.component;
