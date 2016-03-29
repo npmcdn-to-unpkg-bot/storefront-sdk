@@ -54,6 +54,7 @@ class Placeholder extends React.Component {
 
   getDataFromStores = (props) => {
     const componentSettings = dispatcher.stores.SettingsStore.getState().get(props.parentId);
+    const editMode = dispatcher.stores.EditorStore.getState().get('isActive');
 
     if (!componentSettings) {
       return { setings: null, component: null };
@@ -72,7 +73,8 @@ class Placeholder extends React.Component {
     }
     return {
       settings: settings ? settings : Immutable.Map(),
-      component: component
+      component: component,
+      editMode: editMode
     };
   }
 
@@ -83,8 +85,10 @@ class Placeholder extends React.Component {
   onComponentChange = (editorStore) => {
     const editor = editorStore.get('editor');
     const componentProps = editor ? editor.get('componentProps') : '';
+    const editMode = dispatcher.stores.EditorStore.getState().get('isActive');
     this.setState(
       {
+        editMode: editMode,
         selectedComponent: editorStore.get('selectedComponent'),
         openEditorId: componentProps.id
       }
@@ -144,8 +148,12 @@ class Placeholder extends React.Component {
       {
         'data-is-dragging': isSelected,
         'data-is-match': isComponentEqual,
-        'data-is-editing': true
+        'data-is-editing': this.state.editMode
       } : {} ;
+
+    if (!Component && !this.state.editMode) {
+      return null;
+    }
 
     if (!Component) {
       if (droppable) dataAttrs['data-is-empty'] = true;
