@@ -3,13 +3,8 @@ import dispatcher from '../../dispatcher/StorefrontDispatcher';
 import shallowCompare from 'react-addons-shallow-compare';
 import mergeDeep from 'utils/mergeDeep';
 import droppable from 'utils/droppable';
-<<<<<<< HEAD:src/components/Placeholder.js
-import keys from 'lodash-compat/object/keys';
-import { isImplementsEqual } from 'utils/implements';
-=======
 //import keys from 'lodash-compat/object/keys';
-import isImplementsEqual from 'utils/implements';
->>>>>>> Add style for default placeholder on hover (WIP):src/components/Placeholder/Placeholder.js
+import { isImplementsEqual } from 'utils/implements';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import './Placeholder.less';
 
@@ -46,7 +41,6 @@ class Placeholder extends React.Component {
       loading: false,
       openEditorId: ''
     };
-
     dispatcher.stores.SettingsStore.listen(this.onChange);
     dispatcher.stores.ComponentStore.listen(this.onChange);
     dispatcher.stores.EditorStore.listen(this.onComponentChange);
@@ -137,18 +131,6 @@ class Placeholder extends React.Component {
         </div>
       );
     }
-
-
-    const {
-      isDragging,
-      connectDropTarget,
-      parentId,
-      id,
-      droppable,
-      //component,
-      selectedComponent,
-      components
-    } = this.props;
 
     const settings = mergeDeep(this.state.settings, this.props.settings);
     const Component = this.state.component;
