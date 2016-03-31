@@ -1,6 +1,9 @@
 import React from 'react';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
-import Placeholder from './Placeholder';
+import PurePlaceholder from './Placeholder';
+import contextify from 'utils/contextify';
+
+const Placeholder = contextify()(PurePlaceholder);
 
 class Root extends React.Component {
   static childContextTypes = {
