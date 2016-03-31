@@ -22,41 +22,24 @@ import mergeDeep from 'utils/mergeDeep';
  *  <Placeholder component="Banner@vtex.storefront-theme" settings={{title: 'Hi'}}/>
  */
 
-
 class Placeholder extends React.Component {
-  static contextTypes = {
-    parentId: React.PropTypes.string
-  }
-
-  static childContextTypes = {
-    parentId: React.PropTypes.string
-  }
-
-  getChildContext() {
-    return { parentId: this.state.fullId };
-  }
-
   componentWillMount() {
     if (!this.props.id) {
       console.error('Placeholder: required prop "id" not defined');
     }
 
-    this.state = this.getDataFromStores(this.props, this.context);
+    this.state = this.getDataFromStores(this.props);
 
     dispatcher.stores.SettingsStore.listen(this.onChange);
     dispatcher.stores.ComponentStore.listen(this.onChange);
   }
 
-  componentWillReceiveProps(props, context) {
-    this.setState(this.getDataFromStores(props, context));
+  componentWillReceiveProps(props) {
+    this.setState(this.getDataFromStores(props));
   }
 
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    const currentParentId = this.context && this.context.parentId;
-    const nextParentId = nextContext && nextState.parentId;
-    const isParentIdEqual = currentParentId === nextParentId;
-
-    return !isParentIdEqual || shallowCompare(this, nextProps, nextState);
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   componentWillUnmount() {
@@ -64,19 +47,8 @@ class Placeholder extends React.Component {
     dispatcher.stores.ComponentStore.unlisten(this.onChange);
   }
 
-  getPlaceholderId = (props, context) => {
-    let id = props.id;
-
-    if (context.parentId) {
-      id = context.parentId + '/' + id;
-    }
-
-    return id;
-  }
-
-  getDataFromStores = (props, context) => {
-    const id = this.getPlaceholderId(props, context);
-    const componentSettings = dispatcher.stores.SettingsStore.getState().get(id);
+  getDataFromStores = (props) => {
+    const componentSettings = dispatcher.stores.SettingsStore.getState().get(props.id);
 
     if (!componentSettings) {
       return { setings: null, component: null };
@@ -96,13 +68,12 @@ class Placeholder extends React.Component {
 
     return {
       settings: settings ? settings : Immutable.Map(),
-      component: component,
-      fullId: id
+      component: component
     };
   }
 
   onChange = () => {
-    this.setState(this.getDataFromStores(this.props, this.context));
+    this.setState(this.getDataFromStores(this.props));
   }
 
   render() {
@@ -116,7 +87,6 @@ class Placeholder extends React.Component {
     return (
       <Component
         {...this.props}
-        id={this.state.fullId}
         settings={settings.isEmpty() ? null : settings}
       />
     );
