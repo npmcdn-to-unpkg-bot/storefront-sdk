@@ -74,7 +74,8 @@ class Placeholder extends React.Component {
     return {
       settings: settings ? settings : Immutable.Map(),
       component: component,
-      editMode: editMode
+      editMode: editMode,
+      componentName: componentName
     };
   }
 
@@ -105,11 +106,18 @@ class Placeholder extends React.Component {
       connectDropTarget,
       parentId,
       id,
-      droppable,
       component,
       selectedComponent,
       components
     } = this.props;
+
+    const componentName = this.state.componentName.split('@')[0];
+    let droppable;
+    if (componentName.match(/Page$/) || componentName.match(/Template$/)){
+      droppable = false;
+    } else {
+      droppable = this.props.droppable;
+    }
 
     if (this.state.openEditorId === parentId) {
       console.log('ESTOU EDITANDO O COMPONENTE', this.state.openEditorId);
@@ -135,7 +143,6 @@ class Placeholder extends React.Component {
         </div>
       );
     }
-
     const settings = mergeDeep(this.state.settings, this.props.settings);
     const Component = this.state.component;
 
