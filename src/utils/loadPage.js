@@ -80,7 +80,7 @@ function getRouteAssets(dispatcher, ignoreAssetLoad) {
   }
 }
 
-export default function loadPage(currentURL, dispatcher, ignoreAssetLoad = false) {
+function loadPage(currentURL, dispatcher, ignoreAssetLoad = false) {
   // Listener of the context store
   const contextListener = () => {
     getRouteAssets(dispatcher, ignoreAssetLoad);
@@ -93,3 +93,4 @@ export default function loadPage(currentURL, dispatcher, ignoreAssetLoad = false
   dispatcher.actions.AreaActions.getRouteResources(currentURL);
 }
 
+export { loadScript, loadPage };
