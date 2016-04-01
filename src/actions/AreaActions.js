@@ -29,7 +29,7 @@ class AreaActions {
     return data;
   }
 
-  saveAreaSettingsError(error) {
+  saveAreaSettingsFail(error) {
     return error;
   }
 

@@ -12,11 +12,12 @@ import ReactDOM from 'react-dom';
 import dispatcher from './dispatcher/StorefrontDispatcher';
 import connectToStores from './utils/connectToStores';
 import Root from './components/Root';
-import loadPage from './utils/loadPage';
+import { loadScript, loadPage } from './utils/loadPage';
 
 import * as storefrontService from 'services/Storefront';
 
 import './utils/editable';
+import contextify from './utils/contextify';
 
 const history = useQueries(createHistory)();
 
@@ -32,6 +33,9 @@ class StorefrontSDK {
   }
 
   connectToStores = connectToStores
+  loadScript = loadScript
+  loadPage = loadPage
+  contextify = contextify
 
   init = () => {
     // Set history listener for navigation

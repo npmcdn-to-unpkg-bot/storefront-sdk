@@ -6,6 +6,7 @@ import Price from './components/Price';
 import Img from './components/Img';
 import Link from './components/Link';
 import Placeholder from './components/Placeholder';
+import contextify from './utils/contextify';
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
@@ -34,6 +35,10 @@ const components = [
   },
   {
     name: 'Placeholder@vtex.storefront-sdk',
+    constructor: contextify()(Placeholder)
+  },
+  {
+    name: 'PurePlaceholder@vtex.storefront-sdk',
     constructor: Placeholder
   }
 ];

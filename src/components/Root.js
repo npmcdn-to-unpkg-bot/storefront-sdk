@@ -1,6 +1,9 @@
 import React from 'react';
 import dispatcher from '../dispatcher/StorefrontDispatcher';
-import Placeholder from './Placeholder';
+import PurePlaceholder from './Placeholder';
+import contextify from 'utils/contextify';
+
+const Placeholder = contextify()(PurePlaceholder);
 
 class Root extends React.Component {
   static childContextTypes = {
@@ -16,6 +19,7 @@ class Root extends React.Component {
   componentWillMount() {
     this.setState({
       location: this.getContextLocation(),
+      lockRoute: false,
       ...this.updatePage()
     });
   }
@@ -51,7 +55,7 @@ class Root extends React.Component {
 
     if (isPageLoading === false) {
       return {
-        route,
+        route: this.state.lockRoute ? (this.state.route || route) : route,
         params: ContextStore.get('params'),
         loaded: true
       };
@@ -60,14 +64,14 @@ class Root extends React.Component {
     return { loaded: false };
   }
 
+  setLockRoute = () => this.setState({ lockRoute: true })
+
   render() {
     const { loaded, params } = this.state;
     const location = this.state.location ? this.state.location.toJS() : {};
     const id = `${this.state.route}/content`;
 
-    if (!loaded) {
-      return null;
-    }
+    if (!loaded) return null;
 
     return (
       <div className="theme">
@@ -75,6 +79,7 @@ class Root extends React.Component {
           id={id}
           params={params}
           location={location}
+          setLockRoute={this.setLockRoute}
         />
       </div>
     );
