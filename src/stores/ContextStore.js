@@ -27,6 +27,10 @@ class ContextStore {
 
     this.setState(state);
   }
+
+  onSetLoading(bool) {
+    this.setState(this.state.set('loading', bool));
+  }
 }
 
 export default ContextStore;

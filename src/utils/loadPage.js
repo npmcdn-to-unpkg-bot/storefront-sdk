@@ -28,7 +28,6 @@ function getRouteAssets(dispatcher, ignoreAssetLoad) {
   const routeAssets = AssetStore.get(route);
   const assetsPayload = routeAssets && routeAssets.get('payload');
 
-
   // If the list of assets is present
   if (assetsPayload) {
     // Auxiliar map to make the diff of the assets
@@ -84,9 +83,13 @@ function loadPage(currentURL, dispatcher, ignoreAssetLoad = false) {
   // Listener of the context store
   const contextListener = () => {
     getRouteAssets(dispatcher, ignoreAssetLoad);
+    // The page is loaded!
+    setTimeout(() => dispatcher.actions.ContextActions.setLoading(false), 0);
     dispatcher.stores.ContextStore.unlisten(contextListener);
   };
 
+  // Set the page loading
+  dispatcher.actions.ContextActions.setLoading(true);
   // Add a store listener, every change to ContextStore will call getRouteAssets()
   dispatcher.stores.ContextStore.listen(contextListener);
   // Here we go! :)
