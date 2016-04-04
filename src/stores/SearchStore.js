@@ -11,15 +11,13 @@ function getDataFromResources(state, resources) {
     if (productsAreas) {
       for (let currentArea of productsAreas) {
         let productsSlug = pluck(currentArea.data, 'slug');
-        let results = Immutable.Map().setIn([currentArea.area, 'results'], productsSlug);
-        map.set(path, results);
+        map.setIn([path, currentArea.area, 'results'], productsSlug);
       }
     }
     if (productAreas) {
       for (let currentArea of productAreas) {
         let productSlug = pluck(currentArea.data, 'slug');
-        let results = Immutable.Map().setIn([currentArea.area, 'results'], productSlug);
-        map.set(path, results);
+        map.setIn([path, currentArea.area, 'results'], productSlug);
       }
     }
   });
