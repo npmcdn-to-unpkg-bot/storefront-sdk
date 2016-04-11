@@ -19,7 +19,6 @@ module.exports = {
       'react-dom',
       'react-addons-css-transition-group',
       'react-addons-shallow-compare',
-      'react-tap-event-plugin',
       'react-intl',
       'react-helmet'
     ]
