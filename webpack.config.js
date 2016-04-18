@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var path = require('path');
 var pkg = require('./package.json');
 var manifest = require('./manifest.json');
-var publicPath = '/assets/@' + manifest.vendor + '.' + pkg.name + '/';
+var publicPath = '/assets/'+ manifest.vendor + '/' + manifest.name + '/' + manifest.version + '/';
 var production = process.env.NODE_ENV === 'production';
 
 var commonsConfig = {
