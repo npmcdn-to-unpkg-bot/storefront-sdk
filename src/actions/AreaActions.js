@@ -58,11 +58,12 @@ class AreaActions {
     return {currentURL, id, params, error};
   }
 
-  getRouteResources(currentURL) {
+  getRouteResources(currentURL, location) {
     storefrontService.getRouteResources(currentURL)
       .then(response => {
         let result = {
           currentURL,
+          location,
           resources: response.data
         };
         this.actions.getRouteResourcesSuccess(result);
@@ -72,16 +73,12 @@ class AreaActions {
     return currentURL;
   }
 
-  getRouteResourcesSuccess({currentURL, resources}) {
-    return {currentURL, resources};
+  getRouteResourcesSuccess({currentURL, location, resources}) {
+    return {currentURL, location, resources};
   }
 
   getRouteResourcesFail({currentURL, error}) {
     return {currentURL, error};
-  }
-
-  loadPageSuccess(route) {
-    return route;
   }
 }
 
