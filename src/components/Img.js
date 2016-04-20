@@ -4,8 +4,8 @@ import dispatcher from '../dispatcher/StorefrontDispatcher';
 class Img extends React.Component {
   static propTypes = {
     src: React.PropTypes.string.isRequired,
-    width: React.PropTypes.number.isRequired,
-    height: React.PropTypes.number.isRequired
+    width: React.PropTypes.number,
+    height: React.PropTypes.number
   }
 
   constructor(props) {
