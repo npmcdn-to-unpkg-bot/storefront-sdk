@@ -1,4 +1,4 @@
-class RouteActions {
+class ContextActions {
   changeLocation(location) {
     return location;
   }
@@ -6,6 +6,10 @@ class RouteActions {
   setLoading(bool) {
     return bool;
   }
+
+  replaceWithCache(URL) {
+    return URL;
+  }
 }
 
-export default RouteActions;
+export default ContextActions;
