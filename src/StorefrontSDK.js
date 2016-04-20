@@ -40,20 +40,10 @@ class StorefrontSDK {
   init = () => {
     // Set history listener for navigation
     history.listen(location => {
-      // Update the location
-      dispatcher.actions.ContextActions.changeLocation(location);
-      const currentURL = location.pathname + location.search;
-
+      // Signal that we are loading the page
+      dispatcher.actions.ContextActions.setLoading(true);
       // Start the route loading cycle!
-      if (location.action === 'POP') {
-        // If there's a POP action, then we already have the assets
-        // so we ignore loading the scripts by passing true
-        // on the third parameter
-        loadPage(currentURL, dispatcher, true);
-      } else {
-        // It's a push or replace action, then we load the scripts
-        loadPage(currentURL, dispatcher);
-      }
+      loadPage(location, dispatcher);
     });
 
     // Finally, render
