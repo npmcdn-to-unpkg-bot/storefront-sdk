@@ -36,7 +36,7 @@ class CartActions {
 
     return checkout.removeItems(orderFormId, items, expectedOrderFormSections)
       .then((updatedOrderForm) =>
-        this.actions.requestSuccess(updatedOrderForm)
+        this.actions.requestSuccess(updatedOrderForm.data)
       )
       .catch((error) =>
         this.actions.requestFail(error)
