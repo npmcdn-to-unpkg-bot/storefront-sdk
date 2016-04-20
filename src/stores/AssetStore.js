@@ -6,7 +6,11 @@ class AssetStore {
   constructor(dispatcher) {
     this.bindActions(dispatcher.actions.AreaActions);
 
-    this.state = Immutable.Map();
+    this.state = Immutable.fromJS({
+      [window.storefront.currentRoute.name]: {
+        payload: window.storefront.currentRoute.assets
+      }
+    });
   }
 
   onGetAreaAssets({id}) {
@@ -36,22 +40,13 @@ class AssetStore {
 
   onGetRouteResourcesSuccess({resources}) {
     const { route, assets } = resources;
-    const state = this.state.withMutations(state => {
-      state
-        .setIn([route, 'loading'], true)
-        .setIn([route, 'payload'], assets);
-    });
+    const state = this.state.setIn([route, 'payload'], assets);
 
     this.setState(state);
   }
 
   onGetRouteResourcesFail({currentURL, error}) {
     const state = this.state.setIn([currentURL, 'error'], error);
-    this.setState(state);
-  }
-
-  onLoadPageSuccess(route) {
-    const state = this.state.setIn([route, 'loading'], false);
     this.setState(state);
   }
 }
