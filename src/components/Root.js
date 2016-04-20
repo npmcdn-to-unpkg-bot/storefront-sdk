@@ -20,13 +20,12 @@ class Root extends React.Component {
     this.setState({
       location: this.getContextLocation(),
       lockRoute: false,
-      ...this.updatePage()
+      ...this.updatePage({ lockRoute: false })
     });
   }
 
   componentDidMount() {
     dispatcher.stores.ContextStore.listen(this.onContextChange);
-    dispatcher.stores.AssetStore.listen(this.onAssetChange);
   }
 
   shouldComponentUpdate(_, nextState) {
@@ -35,12 +34,14 @@ class Root extends React.Component {
 
   componentWillUnmount() {
     dispatcher.stores.ContextStore.unlisten(this.onContextChange);
-    dispatcher.stores.AssetStore.unlisten(this.onAssetChange);
   }
 
-  onContextChange = () => this.setState({ location: this.getContextLocation() })
-
-  onAssetChange = () => this.setState({ ...this.updatePage() })
+  onContextChange = () => {
+    this.setState({
+      ...this.updatePage(),
+      location: this.getContextLocation()
+    });
+  }
 
   getContextLocation = () => {
     const ContextStore = dispatcher.stores.ContextStore.getState();
@@ -49,13 +50,13 @@ class Root extends React.Component {
 
   updatePage = () => {
     const ContextStore = dispatcher.stores.ContextStore.getState();
-    const AssetStore = dispatcher.stores.AssetStore.getState();
     const route = ContextStore.get('route');
-    const isPageLoading = AssetStore.getIn([route, 'loading']);
+    const isPageLoading = ContextStore.get('loading');
+    const lockRoute = this.state ? this.state.lockRoute : false;
 
     if (isPageLoading === false) {
       return {
-        route: this.state.lockRoute ? (this.state.route || route) : route,
+        route: lockRoute ? (this.state.route || route) : route,
         params: ContextStore.get('params'),
         loaded: true
       };
@@ -68,7 +69,7 @@ class Root extends React.Component {
 
   render() {
     const { loaded, params } = this.state;
-    const location = this.state.location ? this.state.location.toJS() : {};
+    const location = this.state.location || {};
     const id = `${this.state.route}/content`;
 
     if (!loaded) return null;
