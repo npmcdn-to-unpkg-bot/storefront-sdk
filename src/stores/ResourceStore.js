@@ -36,7 +36,7 @@ class ResourceStore {
     this.setState(newState);
   }
 
-  onRouteResourcesResources(currentURL) {
+  onGetRouteResources(currentURL) {
     this.setState(this.state.set(currentURL, Immutable.Map()));
   }
 

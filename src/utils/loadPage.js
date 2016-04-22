@@ -21,7 +21,7 @@ function loadScript(src) {
 
 // Declare an assets map to not load scripts unnecessarily
 let assetsMap = {};
-function getRouteAssets(dispatcher, ignoreAssetLoad) {
+function getRouteAssets(currentURL, dispatcher) {
   const ContextStore = dispatcher.stores.ContextStore.getState();
   const route = ContextStore.get('route');
   const AssetStore = dispatcher.stores.AssetStore.getState();
@@ -30,15 +30,19 @@ function getRouteAssets(dispatcher, ignoreAssetLoad) {
 
   // If the list of assets is present
   if (assetsPayload) {
-    // Auxiliar map to make the diff of the assets
-    let newAssetsMap = {};
     // assets will receive the diff of the actual route scripts with the ones on the map
-    let assets;
+    let assets = [];
     // If there's no assets on the map, fill it with all the route assets
     if (Object.keys(assetsMap).length === 0) {
-      assetsPayload.forEach(newAsset => assetsMap[newAsset] = null);
+      assetsPayload.forEach(newAsset => {
+        assets.push(newAsset);
+        assetsMap[newAsset] = true;
+      });
     } else {
       // Else lets make a diff
+      // ===========================================
+      // Auxiliar map to make the diff of the assets
+      let newAssetsMap = {};
       assetsPayload.forEach(newAsset => {
         let isAssetNew;
         for (let asset in assetsMap) {
@@ -49,24 +53,15 @@ function getRouteAssets(dispatcher, ignoreAssetLoad) {
           isAssetNew = true;
         }
 
-        if (isAssetNew) newAssetsMap[newAsset] = null;
+        if (isAssetNew) newAssetsMap[newAsset] = true;
       });
 
+      // Pass all the new assets to the var we will use to load the scripts
+      assets = Object.keys(newAssetsMap).map(newAsset => newAsset);
       // Merge the assets maps
       assetsMap = { ...assetsMap, ...newAssetsMap };
     }
 
-    // If we don't need to load the scripts
-    if (ignoreAssetLoad) {
-      setTimeout(() => {
-        dispatcher.actions.AreaActions.loadPageSuccess(route);
-      }, 0);
-
-      return;
-    }
-
-    // Pass all the new assets to the var we will use to load the scripts
-    assets = Object.keys(newAssetsMap).map(newAsset => newAsset);
     // Promises array
     const requests = [];
     // Load all the scripts
@@ -74,26 +69,43 @@ function getRouteAssets(dispatcher, ignoreAssetLoad) {
 
     // When all files are loaded
     Promise.all(requests).then(() => {
-      dispatcher.actions.AreaActions.loadPageSuccess(route);
+      URLMap[currentURL] = true;
+      dispatcher.actions.ContextActions.setLoading(false);
     });
   }
 }
 
-function loadPage(currentURL, dispatcher, ignoreAssetLoad = false) {
-  // Listener of the context store
-  const contextListener = () => {
-    getRouteAssets(dispatcher, ignoreAssetLoad);
-    // The page is loaded!
-    setTimeout(() => dispatcher.actions.ContextActions.setLoading(false), 0);
-    dispatcher.stores.ContextStore.unlisten(contextListener);
-  };
+// Declare URL map to not load pages settings unnecessarily
+let URLMap = {};
+function loadPage(location, dispatcher) {
+  const currentURL = location.pathname + location.search;
 
-  // Set the page loading
-  dispatcher.actions.ContextActions.setLoading(true);
-  // Add a store listener, every change to ContextStore will call getRouteAssets()
-  dispatcher.stores.ContextStore.listen(contextListener);
-  // Here we go! :)
-  dispatcher.actions.AreaActions.getRouteResources(currentURL);
+  // If we have any URLs on the map
+  // or the current URL is present
+  if (Object.keys(URLMap).length > 0 && !URLMap[currentURL]) {
+    // Listener of the context store
+    const contextListener = () => {
+      getRouteAssets(currentURL, dispatcher);
+      dispatcher.stores.ContextStore.unlisten(contextListener);
+    };
+
+    // Add a store listener, every change to ContextStore will call getRouteAssets()
+    dispatcher.stores.ContextStore.listen(contextListener);
+    // Here we go! :)
+    dispatcher.actions.AreaActions.getRouteResources(currentURL, location);
+  } else if (URLMap[currentURL]) {
+    // If we have the URL on the map
+    // We have the cache too, so we don't need
+    // to load anything
+    dispatcher.actions.ContextActions.replaceWithCache(currentURL);
+    dispatcher.actions.ContextActions.setLoading(false);
+  } else {
+    // If all else fails, then that means it's the first load
+    // On the first load the page comes preload, so we just need
+    // to add the current URL to the map
+    URLMap[currentURL] = true;
+    dispatcher.actions.ContextActions.setLoading(false);
+  }
 }
 
 export { loadScript, loadPage };

@@ -47,7 +47,9 @@ export function getAreaSettings({id}) {
 }
 
 export function getRouteResources(currentURL) {
-  return axios.get(`/_routes/${currentURL}`, {
+  const URL = currentURL.replace(/^\//, '');
+
+  return axios.get(`/_routes/${URL}`, {
     headers: defaultHeaders
   });
 }
