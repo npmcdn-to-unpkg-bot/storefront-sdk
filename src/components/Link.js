@@ -44,7 +44,7 @@ class Link extends React.Component {
     to: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object]).isRequired,
     query: React.PropTypes.object,
     hash: React.PropTypes.string,
-    hash: React.PropTypes.object,
+    state: React.PropTypes.object,
     onClick: React.PropTypes.func
   }
 
