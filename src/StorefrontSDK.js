@@ -18,6 +18,7 @@ import Root from './components/Root';
 import { loadScript, loadPage } from './utils/loadPage';
 
 import * as storefrontService from 'services/Storefront';
+import * as vtexIdService from 'services/VtexId';
 
 import './utils/editable';
 import contextify from './utils/contextify';
@@ -32,7 +33,8 @@ class StorefrontSDK {
   history = history;
 
   services = {
-    storefront: storefrontService
+    storefront: storefrontService,
+    vtexId: vtexIdService
   }
 
   connectToStores = connectToStores
