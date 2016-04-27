@@ -17,13 +17,12 @@ class Img extends React.Component {
   }
 
   getBaseUrl(state) {
-    return `http://${state.accountName}.vteximg.com.br`;
+    return `//${state.accountName}.vteximg.com.br`;
   }
 
   render() {
     let path;
     let src = this.props.src;
-
     if (src.indexOf('http') !== -1) {
       path = src;
     } else {
