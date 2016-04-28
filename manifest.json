@@ -1,6 +1,6 @@
 {
   "name": "storefront-sdk",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "title": "VTEX Storefront SDK",
   "description": "React routing, component registry, Flux and VTEX common stores and actions for Storefront apps.",
   "vendor": "vtex",
