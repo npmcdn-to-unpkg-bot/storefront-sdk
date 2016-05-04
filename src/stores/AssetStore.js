@@ -4,7 +4,7 @@ import immutable from 'alt/utils/ImmutableUtil';
 @immutable
 class AssetStore {
   constructor(dispatcher) {
-    this.bindActions(dispatcher.actions.AreaActions);
+    this.bindActions(dispatcher.actions.RouteActions);
 
     this.state = Immutable.fromJS({
       [window.storefront.currentRoute.name]: {
@@ -13,12 +13,12 @@ class AssetStore {
     });
   }
 
-  onGetAreaAssets({id}) {
+  onGetPlaceholder({id}) {
     const state = this.state.set(id, Immutable.Map({ loading: true }));
     this.setState(state);
   }
 
-  onGetAreaAssetsSuccess({id, assets}) {
+  onGetPlaceholderSuccess({id, assets}) {
     const state = this.state.withMutations(state => {
       state
         .setIn([id, 'loading'], false)
@@ -28,7 +28,7 @@ class AssetStore {
     this.setState(state);
   }
 
-  onGetAreaAssetsFail({id, error}) {
+  onGetPlaceholderFail({id, error}) {
     const state = this.state.withMutations(state => {
       state
         .setIn([id, 'loading'], false)
@@ -38,14 +38,14 @@ class AssetStore {
     this.setState(state);
   }
 
-  onGetRouteResourcesSuccess({resources}) {
+  onGetRouteSuccess({resources}) {
     const { route, assets } = resources;
     const state = this.state.setIn([route, 'payload'], assets);
 
     this.setState(state);
   }
 
-  onGetRouteResourcesFail({currentURL, error}) {
+  onGetRouteFail({currentURL, error}) {
     const state = this.state.setIn([currentURL, 'error'], error);
     this.setState(state);
   }

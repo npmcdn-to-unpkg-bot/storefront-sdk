@@ -38,7 +38,7 @@ class ProductStore {
   constructor(dispatcher) {
     this.bindActions(dispatcher.actions.SearchActions);
     this.bindActions(dispatcher.actions.ProductActions);
-    this.bindActions(dispatcher.actions.AreaActions);
+    this.bindActions(dispatcher.actions.RouteActions);
 
     this.state = getDataFromResources(Immutable.Map(), window.storefront.currentRoute.resources);
 
@@ -75,8 +75,8 @@ class ProductStore {
     this.setState(addProducts(this.state, products));
   }
 
-  onGetAreaResourcesSuccess({ resources }) {
-    this.setState(getDataFromResources(this.state, resources));
+  onGetPlaceholderResourcesSuccess({ resources }) {
+    this.setState(getDataFromResources(this.state, resources.resources));
   }
 
   onGetRouteResourcesSuccess({ resources }) {

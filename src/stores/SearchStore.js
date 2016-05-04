@@ -27,7 +27,7 @@ function getDataFromResources(state, resources) {
 class SearchStore {
   constructor(dispatcher) {
     this.bindActions(dispatcher.actions.SearchActions);
-    this.bindActions(dispatcher.actions.AreaActions);
+    this.bindActions(dispatcher.actions.RouteActions);
 
     this.state = getDataFromResources(Immutable.Map(), window.storefront.currentRoute.resources);
   }
@@ -64,8 +64,8 @@ class SearchStore {
     this.setState(this.state.setIn([params, 'error'], error));
   }
 
-  onGetAreaResourcesSuccess({resources}) {
-    this.setState(getDataFromResources(this.state, resources));
+  onGetPlaceholderResourcesSuccess({ resources }) {
+    this.setState(getDataFromResources(this.state, resources.resources));
   }
 
   onGetRouteResourcesSuccess({ resources }) {

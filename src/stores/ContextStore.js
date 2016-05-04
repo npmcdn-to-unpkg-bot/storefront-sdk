@@ -8,7 +8,7 @@ class ContextStore {
     const currentURL = window.location.pathname + window.location.search;
 
     this.bindActions(dispatcher.actions.ContextActions);
-    this.bindActions(dispatcher.actions.AreaActions);
+    this.bindActions(dispatcher.actions.RouteActions);
 
     window._storefront.context.token = ('; ' + document.cookie).split('; VtexIdclientAutCookie=').pop().split(';').shift();
 
@@ -23,7 +23,7 @@ class ContextStore {
       });
   }
 
-  onGetRouteResourcesSuccess({location, resources}) {
+  onGetRouteSuccess({location, resources}) {
     const { route, params } = resources;
     const previousLocation = this.state.get('location');
     let state;

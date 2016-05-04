@@ -17,12 +17,12 @@ function getDataFromResources(state, resources) {
 @immutable
 class SettingsStore {
   constructor(dispatcher) {
-    this.bindActions(dispatcher.actions.AreaActions);
+    this.bindActions(dispatcher.actions.RouteActions);
 
     this.state = getDataFromResources(Immutable.Map(), window.storefront.currentRoute.resources);
   }
 
-  onSaveAreaSettings({id, component, settings}) {
+  onSavePlaceholderSettings({id, component, settings}) {
     // Here we are doing an optmistic update. The data is not saved on the
     // server yet, but it probably will.
     this.oldState = this.state;
@@ -36,17 +36,17 @@ class SettingsStore {
     this.setState(state);
   }
 
-  onSaveAreaSettingsFail(error) {
+  onSavePlaceholderSettingsFail(error) {
     // If the server cant update the settings, we go back to the previous state.
     console.warn('Error while saving settings', error);
     this.setState(this.oldState);
   }
 
-  onGetAreaResourcesSuccess({resources}) {
+  onGetPlaceholderSuccess({resources}) {
     this.setState(getDataFromResources(this.state, resources));
   }
 
-  onGetRouteResourcesSuccess({resources}) {
+  onGetRouteSuccess({resources}) {
     this.setState(getDataFromResources(this.state, resources.resources));
   }
 }
