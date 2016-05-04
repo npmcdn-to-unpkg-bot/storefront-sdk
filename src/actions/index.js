@@ -1,4 +1,4 @@
-import AreaActions from './AreaActions';
+import RouteActions from './RouteActions';
 import CartActions from './CartActions';
 import ComponentActions from './ComponentActions';
 import ContextActions from './ContextActions';
@@ -6,7 +6,7 @@ import ProductActions from './ProductActions';
 import SearchActions from './SearchActions';
 
 let actions = [
-  {name: 'AreaActions', obj: AreaActions},
+  {name: 'RouteActions', obj: RouteActions},
   {name: 'CartActions', obj: CartActions},
   {name: 'ComponentActions', obj: ComponentActions},
   {name: 'ContextActions', obj: ContextActions},
