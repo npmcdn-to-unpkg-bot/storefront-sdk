@@ -80,8 +80,8 @@ let URLMap = {};
 function loadPage(location, dispatcher) {
   const currentURL = location.pathname + location.search;
 
-  // If we have any URLs on the map
-  // or the current URL is present
+  // If we have any URL on the map
+  // and the current URL is not present
   if (Object.keys(URLMap).length > 0 && !URLMap[currentURL]) {
     // Listener of the context store
     const contextListener = () => {
@@ -92,7 +92,8 @@ function loadPage(location, dispatcher) {
     // Add a store listener, every change to ContextStore will call getRouteAssets()
     dispatcher.stores.ContextStore.listen(contextListener);
     // Here we go! :)
-    dispatcher.actions.AreaActions.getRouteResources(currentURL, location);
+    dispatcher.actions.RouteActions.getRoute(currentURL, location);
+    dispatcher.actions.RouteActions.getRouteResources(currentURL, location);
   } else if (URLMap[currentURL]) {
     // If we have the URL on the map
     // We have the cache too, so we don't need
@@ -101,8 +102,9 @@ function loadPage(location, dispatcher) {
     dispatcher.actions.ContextActions.setLoading(false);
   } else {
     // If all else fails, then that means it's the first load
-    // On the first load the page comes preload, so we just need
-    // to add the current URL to the map
+    // On the first load the page comes almost fully preloaded,
+    // we just need to get the resourceBindings
+    dispatcher.actions.RouteActions.getRouteResources(currentURL, location);
     URLMap[currentURL] = true;
     dispatcher.actions.ContextActions.setLoading(false);
   }
