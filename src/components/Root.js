@@ -75,7 +75,7 @@ class Root extends React.Component {
     if (!loaded) return null;
 
     return (
-      <div className="theme">
+      <div>
         <Placeholder
           id={id}
           params={params}
