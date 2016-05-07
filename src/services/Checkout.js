@@ -11,8 +11,16 @@ class Checkout {
     return this._getBaseOrderFormURL(orderFormId) + '/attachments/' + attachmentId;
   }
 
+  _getBaseCheckoutURL() {
+    return this.HOST_URL + StorefrontConstants.BASE_CHECKOUT_URL;
+  }
+
   _getBaseOrderFormURL() {
-    return this.HOST_URL + StorefrontConstants.BASE_CHECKOUT_URL + 'orderForm';
+    return this._getBaseCheckoutURL() + 'orderForm';
+  }
+
+  _getOrdersURL() {
+    return this._getBaseCheckoutURL() + 'orders';
   }
 
   _getOrderFormURL(orderFormId) {
@@ -25,6 +33,10 @@ class Checkout {
 
   _getAddToCartURL(orderFormId) {
     return this._getOrderFormURL(orderFormId) + '/items';
+  }
+
+  getOrders(){
+    return axios.get(this._getOrdersURL());
   }
 
   getOrderForm(expectedOrderFormSections = StorefrontConstants.ALL_ORDERFORM_SECTIONS) {

@@ -18,6 +18,7 @@ import Root from './components/Root';
 import { loadScript, loadPage } from './utils/loadPage';
 
 import * as storefrontService from 'services/Storefront';
+import checkoutService from 'services/Checkout';
 
 import './utils/editable';
 import contextify from './utils/contextify';
@@ -32,7 +33,8 @@ class StorefrontSDK {
   history = history;
 
   services = {
-    storefront: storefrontService
+    storefront: storefrontService,
+    checkout: new checkoutService()
   }
 
   connectToStores = connectToStores
