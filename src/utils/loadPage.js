@@ -20,7 +20,10 @@ function loadScript(src) {
 }
 
 // Declare an assets map to not load scripts unnecessarily
-let assetsMap = {};
+let assetsMap = window.storefront.currentRoute.assets.reduce((map, asset) => {
+  map[asset] = true;
+  return map;
+}, {});
 function getRouteAssets(currentURL, dispatcher) {
   const ContextStore = dispatcher.stores.ContextStore.getState();
   const route = ContextStore.get('route');
