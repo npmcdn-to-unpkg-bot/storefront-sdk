@@ -12,8 +12,8 @@ class Search {
       'x-vtex-workspace': workspace ? workspace : 'master'
     };
 
-    this.productResource = `/_resources/search@vtex.storefront-sdk/${accountName}/product`;
-    this.productsResource = `/_resources/search@vtex.storefront-sdk/${accountName}/products`;
+    this.productResource = `http://api.beta.vtex.com/${accountName}/product`;
+    this.productsResource = `http://api.beta.vtex.com/${accountName}/products`;
   }
 
   products(params) {
