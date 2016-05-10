@@ -1,11 +1,9 @@
 import axios from 'axios';
 
 const token = ('; ' + document.cookie).split('; VtexIdclientAutCookie=').pop().split(';').shift();
-const workspace = ('; ' + document.cookie).split('; vtex_workspace=').pop().split(';').shift();
 
 export const defaultHeaders = {
-  'Authorization': `token ${token}`,
-  'x-vtex-workspace': workspace ? workspace : 'master'
+  'Authorization': `token ${token}`
 };
 
 export function saveAreaSettings({id, component, settings}) {

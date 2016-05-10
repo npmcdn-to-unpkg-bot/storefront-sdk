@@ -4,12 +4,10 @@ import omit from 'lodash-compat/object/omit';
 class Search {
   constructor() {
     let token = ('; ' + document.cookie).split('; VtexIdclientAutCookie=').pop().split(';').shift();
-    let workspace = ('; ' + document.cookie).split('; vtex_workspace=').pop().split(';').shift();
     let accountName = global._storefront.context.accountName;
 
     this.defaultHeaders = {
-      'Authorization': `token ${token}`,
-      'x-vtex-workspace': workspace ? workspace : 'master'
+      'Authorization': `token ${token}`
     };
 
     this.productResource = `/_resources/search@vtex.storefront-sdk/${accountName}/product`;
