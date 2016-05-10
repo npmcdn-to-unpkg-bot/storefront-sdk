@@ -1,10 +1,12 @@
 import Immutable from 'immutable';
 import immutable from 'alt/utils/ImmutableUtil';
+import dispatcher from '../dispatcher/StorefrontDispatcher';
 
 function addFacets(state, facets) {
-  let path = window.location.pathname + window.location.search;
+  const location = dispatcher.stores.ContextStore.getState().get('location');
+  const path = location.pathname + location.search;
 
-  let newFacets = state.withMutations(map => {
+  const newFacets = state.withMutations(map => {
     map.set(path, Immutable.fromJS(facets));
   });
 

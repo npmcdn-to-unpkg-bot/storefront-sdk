@@ -1,22 +1,24 @@
 import Immutable from 'immutable';
 import immutable from 'alt/utils/ImmutableUtil';
 import pluck from 'lodash-compat/collection/pluck';
+import dispatcher from '../dispatcher/StorefrontDispatcher';
 
 function getDataFromResources(state, resources) {
-  let path = window.location.pathname + window.location.search;
-  let productsAreas = resources['products@vtex'];
-  let productAreas = resources['product@vtex'];
+  const location = dispatcher.stores.ContextStore.getState().get('location');
+  const path = location.pathname + location.search;
+  const productsAreas = resources['products@vtex'];
+  const productAreas = resources['product@vtex'];
 
   return state.withMutations(map => {
     if (productsAreas) {
       for (let currentArea of productsAreas) {
-        let productsSlug = pluck(currentArea.data, 'slug');
+        const productsSlug = pluck(currentArea.data, 'slug');
         map.setIn([path, currentArea.area, 'results'], productsSlug);
       }
     }
     if (productAreas) {
       for (let currentArea of productAreas) {
-        let productSlug = pluck(currentArea.data, 'slug');
+        const productSlug = pluck(currentArea.data, 'slug');
         map.setIn([path, currentArea.area, 'results'], productSlug);
       }
     }
