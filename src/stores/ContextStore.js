@@ -11,6 +11,8 @@ class ContextStore {
     this.bindActions(dispatcher.actions.AreaActions);
 
     window._storefront.context.token = ('; ' + document.cookie).split('; VtexIdclientAutCookie=').pop().split(';').shift();
+    const cookieName = new RegExp('VtexIdclientAutCookie_' + window._storefront.context.accountName);
+    const userLoggedIn = cookieName.test(document.cookie);
 
     this.state = Immutable.fromJS({ ...window._storefront.context })
       .withMutations(state => {
@@ -19,6 +21,7 @@ class ContextStore {
           .set('params', window.storefront.currentRoute.params)
           .set('location', history.createLocation(currentURL))
           .set('loading', false)
+          .set('userLoggedIn', userLoggedIn)
           .set('_cache', Immutable.Map());
       });
   }
@@ -54,6 +57,10 @@ class ContextStore {
 
   onSetLoading(bool) {
     this.setState(this.state.set('loading', bool));
+  }
+
+  onSetUserLogin(bool) {
+    this.setState(this.state.set('userLoggedIn', bool));
   }
 
   replaceWithCache(URL) {
