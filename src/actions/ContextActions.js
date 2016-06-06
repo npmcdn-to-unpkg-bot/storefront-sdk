@@ -10,6 +10,10 @@ class ContextActions {
   replaceWithCache(URL) {
     return URL;
   }
+
+  setUserLogin(bool) {
+    return bool;
+  }
 }
 
 export default ContextActions;
